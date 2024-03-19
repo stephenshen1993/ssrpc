@@ -22,6 +22,7 @@
         <module>ssrpc-core</module>
         <module>ssrpc-demo-api</module>
         <module>ssrpc-demo-provider</module>
+        <module>ssrpc-demo-consumer</module>
     </modules>
 
     <build>
