@@ -23,6 +23,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findById(int id, String name) {
+        return new User(id, "SS-" + name + "_" + System.currentTimeMillis());
+    }
+
+    @Override
     public int getId(int id) {
         return id;
     }
@@ -30,5 +35,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getName() {
         return "SS123";
+    }
+
+    @Override
+    public String getName(int id) {
+        return "Cola-" + id;
     }
 }

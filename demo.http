@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "service": "com.stephenshen.ssrpc.demo.api.UserService",
-  "method": "findById",
+  "methodSign": "findById@1_int",
   "args": [100]
 }
 
@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "service": "com.stephenshen.ssrpc.demo.api.OrderService",
-  "method": "findById",
+  "methodSign": "findById@1_int",
   "args": [200]
 }
 
@@ -25,6 +25,6 @@ Content-Type: application/json
 
 {
   "service": "com.stephenshen.ssrpc.demo.api.UserService",
-  "method": "hashCode",
-  "args": []
+  "methodSign": "findById@2_int_java.lang.String",
+  "args": [100, "CC"]
 }

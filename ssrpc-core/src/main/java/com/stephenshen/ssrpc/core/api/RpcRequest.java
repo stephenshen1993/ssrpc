@@ -15,6 +15,6 @@ import lombok.Data;
 public class RpcRequest {
 
     private String service; // 接口: com.stephenshen.ssrpc.demo.api.UserService
-    private String method; // 方法: findById
+    private String methodSign; // 方法: findById
     private Object[] args; // 参数: 100
 }

@@ -30,14 +30,21 @@ public class SsrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner() {
         return x -> {
-//            User user = userService.findById(1);
-//            System.out.println("RPC result userService.findById(1) = " + user);
+            User user = userService.findById(1);
+            System.out.println("RPC result userService.findById(1) = " + user);
+
+            User user1 = userService.findById(1, "hubao");
+            System.out.println("RPC result userService.findById(1, \"hubao\") = " + user1);
+
+            System.out.println(userService.getName());
+
+            System.out.println(userService.getName(123));
 
 //            System.out.println(userService.toString());
 //
 //            System.out.println(userService.getId(11));
 
-            System.out.println(userService.getName());
+            // System.out.println(userService.getName());
 
             // Order order = orderService.findById(2);
             // System.out.println("RPC result orderService.findById(2) = " + order);

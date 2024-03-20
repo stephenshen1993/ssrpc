@@ -36,13 +36,23 @@ public class SsrpcDemoProviderApplication {
     @Bean
     ApplicationRunner providerRun() {
         return x -> {
+            // test 1 parameter method
             RpcRequest request = new RpcRequest();
             request.setService("com.stephenshen.ssrpc.demo.api.UserService");
-            request.setMethod("findById");
+            request.setMethodSign("findById@1_int");
             request.setArgs(new Object[]{100});
 
             RpcResponse rpcResponse = invoke(request);
             System.out.println("return : " + rpcResponse.getData());
+
+            // test 2 parameter method
+            RpcRequest request1 = new RpcRequest();
+            request1.setService("com.stephenshen.ssrpc.demo.api.UserService");
+            request1.setMethodSign("findById@2_int_java.lang.String");
+            request1.setArgs(new Object[]{100, "CC"});
+
+            RpcResponse rpcResponse1 = invoke(request1);
+            System.out.println("return : " + rpcResponse1.getData());
         };
     }
 }
