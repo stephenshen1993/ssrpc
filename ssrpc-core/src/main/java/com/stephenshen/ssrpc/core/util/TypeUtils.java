@@ -15,7 +15,7 @@ import java.util.List;
  * @version 1.0
  * @date 2024/3/22 06:39
  */
-public class TyppeUtils {
+public class TypeUtils {
     public static Object cast(Object origin, Class<?> type) {
         if (origin == null) return null;
         Class<?> aClass = origin.getClass();

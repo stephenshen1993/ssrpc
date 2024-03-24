@@ -1,5 +1,8 @@
 package com.stephenshen.ssrpc.demo.api;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *
@@ -20,13 +23,17 @@ public interface UserService {
 
     long getId(float id);
 
+    String getName();
+
+    String getName(int id);
+
     int[] getIds();
 
     long[] getLongIds();
 
     int[] getIds(int[] ids);
 
-    String getName();
+    List<User> getList(List<User> userList);
 
-    String getName(int id);
+    Map<String, User> getMap(Map<String, User> userMap);
 }

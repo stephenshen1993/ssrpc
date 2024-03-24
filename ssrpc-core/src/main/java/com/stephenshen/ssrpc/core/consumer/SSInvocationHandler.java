@@ -3,16 +3,14 @@ package com.stephenshen.ssrpc.core.consumer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.stephenshen.ssrpc.core.api.RpcRequest;
-import com.stephenshen.ssrpc.core.api.RpcResponse;
+import com.stephenshen.ssrpc.core.api.*;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
-import com.stephenshen.ssrpc.core.util.TyppeUtils;
+import com.stephenshen.ssrpc.core.util.TypeUtils;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,9 +27,13 @@ public class SSInvocationHandler implements InvocationHandler {
     final static MediaType JSON_TYPE = MediaType.get("application/json; charset=utf-8");
 
     Class<?> service;
+    RpcContext context;
+    List<String> providers;
 
-    public SSInvocationHandler(Class<?> service) {
+    public SSInvocationHandler(Class<?> service, RpcContext context, List<String> providers) {
         this.service = service;
+        this.context = context;
+        this.providers = providers;
     }
 
     @Override
@@ -46,24 +48,64 @@ public class SSInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        RpcResponse rpcResponse = post(rpcRequest);
+        List<String> urls = context.getRouter().route(providers);
+        String url = (String)context.getLoadBalancer().choose(urls);
+        System.out.println("loadBalancer.choose(urls) ==> " + url);
+        RpcResponse rpcResponse = post(rpcRequest, url);
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
+            Class<?> type = method.getReturnType();
+            System.out.println("method.getReturnType() = " + type);
             if (data instanceof JSONObject jsonResult) {
-                return jsonResult.toJavaObject(method.getReturnType());
+                if (Map.class.isAssignableFrom(type)) {
+                    Map resultMap = new HashMap();
+                    Type genericReturnType = method.getGenericReturnType();
+                    System.out.println(genericReturnType);
+                    if (genericReturnType instanceof ParameterizedType parameterizedType) {
+                        Class<?> keyType = (Class<?>)parameterizedType.getActualTypeArguments()[0];
+                        Class<?> valueType = (Class<?>)parameterizedType.getActualTypeArguments()[1];
+                        System.out.println("keyType = " + keyType);
+                        System.out.println("valueType = " + valueType);
+                        for (Map.Entry<String, Object> entry : jsonResult.entrySet()) {
+                            Object key = TypeUtils.cast(entry.getKey(), keyType);
+                            Object value = TypeUtils.cast(entry.getValue(), valueType);
+                            resultMap.put(key, value);
+                        }
+                    }
+                    return resultMap;
+                }
+
+                return jsonResult.toJavaObject(type);
             } else if (data instanceof JSONArray jsonArray) {
                 Object[] array = jsonArray.toArray();
-                Class<?> componentType = method.getReturnType().getComponentType();
-                // System.out.println(componentType);
-                Object resultArray = Array.newInstance(componentType, array.length);
-                for (int i = 0; i < array.length; i++) {
-                    Array.set(resultArray, i, array[i]);
+                if (type.isArray()) {
+                    Class<?> componentType = type.getComponentType();
+                    Object resultArray = Array.newInstance(componentType, array.length);
+                    for (int i = 0; i < array.length; i++) {
+                        Array.set(resultArray, i, array[i]);
+                    }
+                    return resultArray;
+                } else if (List.class.isAssignableFrom(type)) {
+                    List<Object> returnList = new ArrayList<>(array.length);
+                    Type genericReturnType = method.getGenericReturnType();
+                    System.out.println(genericReturnType);
+                    if (genericReturnType instanceof ParameterizedType parameterizedType) {
+                        Type actualType = parameterizedType.getActualTypeArguments()[0];
+                        System.out.println(actualType);
+                        for (Object o : array) {
+                            returnList.add(TypeUtils.cast(o, (Class<?>)actualType));
+                        }
+                    } else {
+                        returnList.addAll(Arrays.asList(array));
+                    }
+                    return returnList;
+                } else {
+                    return null;
                 }
-                return resultArray;
             }
             else {
-                return TyppeUtils.cast(data, method.getReturnType());
+                return TypeUtils.cast(data, type);
             }
         } else {
             Exception ex = rpcResponse.getEx();
@@ -79,11 +121,11 @@ public class SSInvocationHandler implements InvocationHandler {
         .connectTimeout(1, TimeUnit.SECONDS)
         .build();
 
-    private RpcResponse post(RpcRequest rpcRequest) {
+    private RpcResponse post(RpcRequest rpcRequest, String url) {
         String reqJson = JSON.toJSONString(rpcRequest);
         System.out.println("===> reqJson = " + reqJson);
         Request request = new Request.Builder()
-            .url("http://localhost:8080")
+            .url(url)
             .post(RequestBody.create(reqJson, JSON_TYPE))
             .build();
         try {

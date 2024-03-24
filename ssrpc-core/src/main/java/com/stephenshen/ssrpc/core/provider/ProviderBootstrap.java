@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
-import com.stephenshen.ssrpc.core.util.TyppeUtils;
+import com.stephenshen.ssrpc.core.util.TypeUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -94,7 +94,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         if (args == null || args.length == 0) return args;
         Object[] actuals = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
-            actuals[i] = TyppeUtils.cast(args[i], parameterTypes[i]);
+            actuals[i] = TypeUtils.cast(args[i], parameterTypes[i]);
         }
         return actuals;
     }

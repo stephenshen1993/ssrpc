@@ -1,5 +1,9 @@
 package com.stephenshen.ssrpc.core.consumer;
 
+import com.stephenshen.ssrpc.core.api.LoadBalancer;
+import com.stephenshen.ssrpc.core.api.Router;
+import com.stephenshen.ssrpc.core.cluster.RandomLoadBalancer;
+import com.stephenshen.ssrpc.core.cluster.RoundRibonLoadBalancer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -31,5 +35,16 @@ public class ConsumerConfig {
             consumerBootstrap.start();
             System.out.println("consumerBootstrap started ...");
         };
+    }
+
+    @Bean
+    public LoadBalancer loadBalancer() {
+        // return LoadBalancer.Default;
+        return new RoundRibonLoadBalancer();
+    }
+
+    @Bean
+    public Router router() {
+        return Router.Default;
     }
 }

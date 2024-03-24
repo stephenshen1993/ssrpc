@@ -1,6 +1,8 @@
 package com.stephenshen.ssrpc.demo.consumer;
 
 import com.stephenshen.ssrpc.core.annotation.SSConsumer;
+import com.stephenshen.ssrpc.core.api.RpcRequest;
+import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.consumer.ConsumerConfig;
 import com.stephenshen.ssrpc.demo.api.Order;
 import com.stephenshen.ssrpc.demo.api.OrderService;
@@ -11,10 +13,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 
 @SpringBootApplication
+@RestController
 @Import({ConsumerConfig.class})
 public class SsrpcDemoConsumerApplication {
 
@@ -23,6 +29,11 @@ public class SsrpcDemoConsumerApplication {
 
     @SSConsumer
     private OrderService orderService;
+
+    @RequestMapping("/")
+    public User findById(int id){
+        return userService.findById(id);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(SsrpcDemoConsumerApplication.class, args);

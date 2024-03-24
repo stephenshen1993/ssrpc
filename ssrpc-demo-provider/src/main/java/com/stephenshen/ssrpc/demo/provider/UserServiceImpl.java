@@ -3,7 +3,12 @@ package com.stephenshen.ssrpc.demo.provider;
 import com.stephenshen.ssrpc.core.annotation.SSProvider;
 import com.stephenshen.ssrpc.demo.api.User;
 import com.stephenshen.ssrpc.demo.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -17,9 +22,15 @@ import org.springframework.stereotype.Component;
 @Component
 @SSProvider
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    Environment environment;
+
     @Override
     public User findById(int id) {
-        return new User(id, "SS-" + System.currentTimeMillis());
+        return new User(id, "SS-"
+            + environment.getProperty("server.port") +
+            "_" + System.currentTimeMillis());
     }
 
     @Override
@@ -65,5 +76,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getName(int id) {
         return "Cola-" + id;
+    }
+
+    @Override
+    public List<User> getList(List<User> userList) {
+        return userList;
+    }
+
+    @Override
+    public Map<String, User> getMap(Map<String, User> userMap) {
+        return userMap;
     }
 }
