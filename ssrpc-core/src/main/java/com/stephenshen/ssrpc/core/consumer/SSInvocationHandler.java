@@ -83,28 +83,32 @@ public class SSInvocationHandler implements InvocationHandler {
                     Class<?> componentType = type.getComponentType();
                     Object resultArray = Array.newInstance(componentType, array.length);
                     for (int i = 0; i < array.length; i++) {
-                        Array.set(resultArray, i, array[i]);
+                        if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                            Array.set(resultArray, i, array[i]);
+                        } else {
+                            Object castObject = TypeUtils.cast(array[i], componentType);
+                            Array.set(resultArray, i, castObject);
+                        }
                     }
                     return resultArray;
                 } else if (List.class.isAssignableFrom(type)) {
-                    List<Object> returnList = new ArrayList<>(array.length);
+                    List<Object> resultList = new ArrayList<>(array.length);
                     Type genericReturnType = method.getGenericReturnType();
                     System.out.println(genericReturnType);
                     if (genericReturnType instanceof ParameterizedType parameterizedType) {
                         Type actualType = parameterizedType.getActualTypeArguments()[0];
                         System.out.println(actualType);
                         for (Object o : array) {
-                            returnList.add(TypeUtils.cast(o, (Class<?>)actualType));
+                            resultList.add(TypeUtils.cast(o, (Class<?>)actualType));
                         }
                     } else {
-                        returnList.addAll(Arrays.asList(array));
+                        resultList.addAll(Arrays.asList(array));
                     }
-                    return returnList;
+                    return resultList;
                 } else {
                     return null;
                 }
-            }
-            else {
+            } else {
                 return TypeUtils.cast(data, type);
             }
         } else {

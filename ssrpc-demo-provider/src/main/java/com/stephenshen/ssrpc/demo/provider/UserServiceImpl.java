@@ -29,8 +29,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(int id) {
         return new User(id, "SS-"
-            + environment.getProperty("server.port") +
-            "_" + System.currentTimeMillis());
+            + environment.getProperty("server.port")
+            + "_" + System.currentTimeMillis());
     }
 
     @Override
@@ -54,21 +54,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int[] getIds() {
-        return new int[]{100,200,300};
-    }
-
-    @Override
-    public long[] getLongIds() {
-        return new long[] {1,2,3};
-    }
-
-    @Override
-    public int[] getIds(int[] ids) {
-        return ids;
-    }
-
-    @Override
     public String getName() {
         return "SS123";
     }
@@ -79,6 +64,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int[] getIds() {
+        return new int[] {100,200,300};
+    }
+
+    @Override
+    public long[] getLongIds() {
+        return new long[]{1,2,3};
+    }
+
+    @Override
+    public int[] getIds(int[] ids) {
+        return ids;
+    }
+
+    @Override
     public List<User> getList(List<User> userList) {
         return userList;
     }
@@ -86,5 +86,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, User> getMap(Map<String, User> userMap) {
         return userMap;
+    }
+
+    @Override
+    public Boolean getFlag(boolean flag) {
+        return !flag;
+    }
+
+    @Override
+    public User[] findUsers(User[] users) {
+        return users;
     }
 }

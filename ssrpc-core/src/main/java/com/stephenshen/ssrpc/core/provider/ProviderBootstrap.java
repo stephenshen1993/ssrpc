@@ -45,11 +45,11 @@ public class ProviderBootstrap implements ApplicationContextAware {
         // skeleton.putAll(providers);
 
         providers.values().forEach(
-            x -> getInterface(x)
+            x -> genInterface(x)
         );
     }
 
-    private void getInterface(Object x) {
+    private void genInterface(Object x) {
         Class<?>[] interfaces = x.getClass().getInterfaces();
         for (Class<?> itfer : interfaces) {
             Method[] methods = itfer.getMethods();
@@ -77,7 +77,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         try {
             ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
             Method method = meta.getMethod();
-            Object[] args = processAgrs(request.getArgs(), method.getParameterTypes());
+            Object[] args = processArgs(request.getArgs(), method.getParameterTypes());
             Object result = method.invoke(meta.getServiceImpl(), args);
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
@@ -90,7 +90,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         return rpcResponse;
     }
 
-    private Object[] processAgrs(Object[] args, Class<?>[] parameterTypes) {
+    private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
         if (args == null || args.length == 0) return args;
         Object[] actuals = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -103,14 +103,5 @@ public class ProviderBootstrap implements ApplicationContextAware {
         Optional<ProviderMeta> optional = providerMetas.stream()
             .filter(x -> x.getMethodSign().equals(methodSign)).findFirst();
         return optional.orElse(null);
-    }
-
-    private Method findMethod(Class<?> aClass, String methodName) {
-        for (Method method : aClass.getMethods()) {
-            if (method.getName().equals(methodName)){
-                return method;
-            }
-        }
-        return null;
     }
 }
