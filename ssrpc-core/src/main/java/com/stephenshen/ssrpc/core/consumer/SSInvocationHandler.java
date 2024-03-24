@@ -1,13 +1,16 @@
 package com.stephenshen.ssrpc.core.consumer;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
+import com.stephenshen.ssrpc.core.util.TyppeUtils;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -47,11 +50,20 @@ public class SSInvocationHandler implements InvocationHandler {
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
-            if (data instanceof JSONObject) {
-                JSONObject jsonResult = (JSONObject)data;
+            if (data instanceof JSONObject jsonResult) {
                 return jsonResult.toJavaObject(method.getReturnType());
-            } else {
-                return data;
+            } else if (data instanceof JSONArray jsonArray) {
+                Object[] array = jsonArray.toArray();
+                Class<?> componentType = method.getReturnType().getComponentType();
+                // System.out.println(componentType);
+                Object resultArray = Array.newInstance(componentType, array.length);
+                for (int i = 0; i < array.length; i++) {
+                    Array.set(resultArray, i, array[i]);
+                }
+                return resultArray;
+            }
+            else {
+                return TyppeUtils.cast(data, method.getReturnType());
             }
         } else {
             Exception ex = rpcResponse.getEx();

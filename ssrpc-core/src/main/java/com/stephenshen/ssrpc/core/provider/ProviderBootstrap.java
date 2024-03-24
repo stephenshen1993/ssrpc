@@ -2,13 +2,13 @@ package com.stephenshen.ssrpc.core.provider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
+import com.stephenshen.ssrpc.core.util.TyppeUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -75,7 +75,8 @@ public class ProviderBootstrap implements ApplicationContextAware {
         try {
             ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
             Method method = meta.getMethod();
-            Object result = method.invoke(meta.getServiceImpl(), request.getArgs());
+            Object[] args = processAgrs(request.getArgs(), method.getParameterTypes());
+            Object result = method.invoke(meta.getServiceImpl(), args);
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
             return rpcResponse;
@@ -85,6 +86,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
             rpcResponse.setEx(new RuntimeException(e.getMessage()));
         }
         return rpcResponse;
+    }
+
+    private Object[] processAgrs(Object[] args, Class<?>[] parameterTypes) {
+        if (args == null || args.length == 0) return args;
+        Object[] actuals = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            actuals[i] = TyppeUtils.cast(args[i], parameterTypes[i]);
+        }
+        return actuals;
     }
 
     private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {
