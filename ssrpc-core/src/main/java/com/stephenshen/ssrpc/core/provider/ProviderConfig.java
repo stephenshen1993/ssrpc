@@ -1,9 +1,13 @@
 package com.stephenshen.ssrpc.core.provider;
 
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
+import com.stephenshen.ssrpc.core.consumer.ConsumerBootstrap;
 import com.stephenshen.ssrpc.core.registry.ZkRegistryCenter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
@@ -22,6 +26,16 @@ public class ProviderConfig {
     @Bean
     ProviderBootstrap providerBootstrap() {
         return new ProviderBootstrap();
+    }
+
+    @Bean
+    @Order(Integer.MIN_VALUE)
+    public ApplicationRunner providerBootstrap_runner(@Autowired ProviderBootstrap providerBootstrap) {
+        return x -> {
+            System.out.println("providerBootstrap starting ...");
+            providerBootstrap.start();
+            System.out.println("providerBootstrap started ...");
+        };
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
