@@ -78,8 +78,8 @@ public class SsrpcDemoConsumerApplication {
 
             // 测试参数是User类型
             System.out.println("Case 8. >>===[测试参数是User类型]===");
-            System.out.println("userService.getId(new User(100,\"KK\")) = " +
-                userService.getId(new User(100,"KK")));
+            System.out.println("userService.getId(new User(100,\"SS\")) = " +
+                userService.getId(new User(100,"SS")));
 
 
             System.out.println("Case 9. >>===[测试返回long[]]===");
@@ -97,15 +97,15 @@ public class SsrpcDemoConsumerApplication {
             // 测试参数和返回值都是List类型
             System.out.println("Case 11. >>===[测试参数和返回值都是List类型]===");
             List<User> list = userService.getList(List.of(
-                new User(100, "KK100"),
-                new User(101, "KK101")));
+                new User(100, "SS100"),
+                new User(101, "SS101")));
             list.forEach(System.out::println);
 
             // 测试参数和返回值都是Map类型
             System.out.println("Case 12. >>===[测试参数和返回值都是Map类型]===");
             Map<String, User> map = new HashMap<>();
-            map.put("A200", new User(200, "KK200"));
-            map.put("A201", new User(201, "KK201"));
+            map.put("A200", new User(200, "SS200"));
+            map.put("A201", new User(201, "SS201"));
             userService.getMap(map).forEach(
                 (k,v) -> System.out.println(k + " -> " + v)
             );

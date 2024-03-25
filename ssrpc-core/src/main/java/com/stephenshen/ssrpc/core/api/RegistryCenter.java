@@ -12,13 +12,14 @@ public interface RegistryCenter {
     void start();
     void stop();
 
-    // provider
+    // provider侧
     void register(String service, String instance);
     void unregister(String service, String instance);
 
-    // consumer
+    // consumer侧
     List<String> fetchAll(String service);
     // void subscribe();
+    // void heartbeat();
 
     class StaticRegistryCenter implements RegistryCenter {
 
