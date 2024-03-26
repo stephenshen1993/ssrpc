@@ -39,6 +39,7 @@ import org.springframework.util.MultiValueMap;
 public class ProviderBootstrap implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+    private RegistryCenter rc;
 
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private String instance;
@@ -49,6 +50,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @PostConstruct  // init-method
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SSProvider.class);
+        rc = applicationContext.getBean(RegistryCenter.class);
         providers.forEach((k, v) -> System.out.println(k));
         providers.values().forEach(x -> genInterface(x));
     }
@@ -57,21 +59,21 @@ public class ProviderBootstrap implements ApplicationContextAware {
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
         this.instance = ip + "_" + port;
+        rc.start();
         skeleton.keySet().forEach(this::registerService);
     }
 
     @PreDestroy
     public void stop() {
         skeleton.keySet().forEach(this::unregisterService);
+        rc.stop();
     }
 
     private void registerService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         rc.register(service, instance);
     }
 
     private void unregisterService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         rc.unregister(service, instance);
     }
 
