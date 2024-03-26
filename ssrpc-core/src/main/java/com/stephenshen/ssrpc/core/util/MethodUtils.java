@@ -1,7 +1,11 @@
 package com.stephenshen.ssrpc.core.util;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -39,6 +43,20 @@ public class MethodUtils {
             c -> sb.append("_").append(c.getCanonicalName())
         );
         return sb.toString();
+    }
+
+    public static List<Field> findAnnotationField(Class<?> aClass, Class<? extends Annotation> annotationClass) {
+        List<Field> result = new ArrayList<>();
+        while (aClass != null) {
+            Field[] fields = aClass.getDeclaredFields();
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(annotationClass)) {
+                    result.add(field);
+                }
+            }
+            aClass = aClass.getSuperclass();
+        }
+        return result;
     }
 
     public static void main(String[] args) {
