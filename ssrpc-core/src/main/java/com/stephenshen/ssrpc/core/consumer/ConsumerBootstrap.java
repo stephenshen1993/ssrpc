@@ -5,11 +5,8 @@ import com.stephenshen.ssrpc.core.api.LoadBalancer;
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.api.Router;
 import com.stephenshen.ssrpc.core.api.RpcContext;
-import com.stephenshen.ssrpc.core.registry.ChangedListener;
-import com.stephenshen.ssrpc.core.registry.Event;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import lombok.Data;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
@@ -17,7 +14,6 @@ import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +21,7 @@ import java.util.stream.Collectors;
 
 /**
  * <p>
- *
+ * 消费者启动类
  * </p>
  *
  * @author stephenshen

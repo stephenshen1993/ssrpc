@@ -1,19 +1,16 @@
 package com.stephenshen.ssrpc.core.consumer;
 
-import com.alibaba.fastjson.JSON;
 import com.stephenshen.ssrpc.core.api.*;
+import com.stephenshen.ssrpc.core.consumer.http.OkHttpInvoker;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
-import okhttp3.*;
 
-import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- *
+ * 消费者消费端动态代理
  * </p>
  *
  * @author stephenshen
@@ -22,11 +19,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class SSInvocationHandler implements InvocationHandler {
 
-    static final MediaType JSON_TYPE = MediaType.get("application/json; charset=utf-8");
-
     Class<?> service;
     RpcContext context;
     List<String> providers;
+
+    HttpInvoker httpInvoker = new OkHttpInvoker();
 
     public SSInvocationHandler(Class<?> service, RpcContext context, List<String> providers) {
         this.service = service;
@@ -49,7 +46,7 @@ public class SSInvocationHandler implements InvocationHandler {
         List<String> urls = context.getRouter().route(providers);
         String url = (String)context.getLoadBalancer().choose(urls);
         System.out.println("loadBalancer.choose(urls) ==> " + url);
-        RpcResponse<Object> rpcResponse = post(rpcRequest, url);
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, url);
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
@@ -58,32 +55,6 @@ public class SSInvocationHandler implements InvocationHandler {
             Exception ex = rpcResponse.getEx();
             ex.printStackTrace();
             throw new RuntimeException(ex);
-        }
-    }
-
-
-    OkHttpClient client = new OkHttpClient.Builder()
-        .connectionPool(new ConnectionPool(16, 60, TimeUnit.SECONDS))
-        .readTimeout(1, TimeUnit.SECONDS)
-        .writeTimeout(1, TimeUnit.SECONDS)
-        .connectTimeout(1, TimeUnit.SECONDS)
-        .build();
-
-    private RpcResponse<Object> post(RpcRequest rpcRequest, String url) {
-        String reqJson = JSON.toJSONString(rpcRequest);
-        System.out.println("===> reqJson = " + reqJson);
-        Request request = new Request.Builder()
-            .url(url)
-            .post(RequestBody.create(reqJson, JSON_TYPE))
-            .build();
-        try {
-            String respJson = client.newCall(request).execute().body().string();
-            System.out.println("===> respJson = " + respJson);
-            RpcResponse<Object> rpcResponse = JSON.parseObject(respJson, RpcResponse.class);
-            return rpcResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
         }
     }
 }
