@@ -60,7 +60,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                     Object consumer = stub.get(serviceName);
                     if (consumer == null) {
                         consumer = createFromRegistry(service, context, rc);
-                        // consumer = createConsumer(service, context, List.of(providers));
+                        stub.put(serviceName, consumer);
                     }
                     field.setAccessible(true);
                     field.set(bean, consumer);
