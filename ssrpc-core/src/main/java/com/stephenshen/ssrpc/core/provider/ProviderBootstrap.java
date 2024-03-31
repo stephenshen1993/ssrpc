@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
+import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import jakarta.annotation.PreDestroy;
@@ -36,7 +37,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     private RegistryCenter rc;
 
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
-    private String instance;
+    private InstanceMeta instance;
 
     @Value("${server.port}")
     private String port;
@@ -52,7 +53,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @SneakyThrows
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
-        this.instance = ip + "_" + port;
+        this.instance = InstanceMeta.http(ip, Integer.valueOf(port));
         rc.start();
         skeleton.keySet().forEach(this::registerService);
     }

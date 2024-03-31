@@ -2,6 +2,7 @@ package com.stephenshen.ssrpc.core.consumer;
 
 import com.stephenshen.ssrpc.core.api.*;
 import com.stephenshen.ssrpc.core.consumer.http.OkHttpInvoker;
+import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
 
@@ -21,11 +22,11 @@ public class SSInvocationHandler implements InvocationHandler {
 
     Class<?> service;
     RpcContext context;
-    List<String> providers;
+    List<InstanceMeta> providers;
 
     HttpInvoker httpInvoker = new OkHttpInvoker();
 
-    public SSInvocationHandler(Class<?> service, RpcContext context, List<String> providers) {
+    public SSInvocationHandler(Class<?> service, RpcContext context, List<InstanceMeta> providers) {
         this.service = service;
         this.context = context;
         this.providers = providers;
@@ -43,10 +44,10 @@ public class SSInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        List<String> urls = context.getRouter().route(providers);
-        String url = (String)context.getLoadBalancer().choose(urls);
-        System.out.println("loadBalancer.choose(urls) ==> " + url);
-        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, url);
+        List<InstanceMeta> instances = context.getRouter().route(providers);
+        InstanceMeta instance = context.getLoadBalancer().choose(instances);
+        System.out.println("loadBalancer.choose(instances) ==> " + instance);
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toString());
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();

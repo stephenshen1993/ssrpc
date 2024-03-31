@@ -1,5 +1,6 @@
 package com.stephenshen.ssrpc.core.api;
 
+import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class RpcContext {
 
     List<Filter> filters; // TODO
 
-    Router router;
+    Router<InstanceMeta> router;
 
-    LoadBalancer loadBalancer;
+    LoadBalancer<InstanceMeta> loadBalancer;
 }

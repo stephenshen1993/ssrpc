@@ -4,7 +4,6 @@ import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
-import lombok.AllArgsConstructor;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
