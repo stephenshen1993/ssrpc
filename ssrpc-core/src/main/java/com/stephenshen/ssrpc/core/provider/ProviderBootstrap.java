@@ -2,6 +2,7 @@ package com.stephenshen.ssrpc.core.provider;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Map;
 
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
@@ -56,7 +57,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SSProvider.class);
         rc = applicationContext.getBean(RegistryCenter.class);
-        providers.forEach((k, v) -> System.out.println(k));
+        providers.keySet().forEach(System.out::println);
         providers.values().forEach(this::genInterface);
     }
 
@@ -87,16 +88,12 @@ public class ProviderBootstrap implements ApplicationContextAware {
     }
 
     private void genInterface(Object impl) {
-        Class<?>[] interfaces = impl.getClass().getInterfaces();
-        for (Class<?> service : interfaces) {
-            Method[] methods = service.getMethods();
-            for (Method method : methods) {
-                if (MethodUtils.checkLocalMethod(method)) {
-                    continue;
-                }
-                createProvider(service, impl, method);
-            }
-        }
+        Arrays.stream(impl.getClass().getInterfaces()).forEach(
+                service -> {
+                    Arrays.stream(service.getMethods())
+                            .filter(method -> !MethodUtils.checkLocalMethod(method))
+                            .forEach(method -> createProvider(service, impl, method));
+                });
     }
 
     private void createProvider(Class<?> service, Object impl, Method method) {
