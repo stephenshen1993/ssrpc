@@ -1,5 +1,6 @@
 package com.stephenshen.ssrpc.core.meta;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -11,6 +12,7 @@ import java.lang.reflect.Method;
  * @date 2024/3/21 07:01
  */
 @Data
+@Builder
 public class ProviderMeta {
 
     private Method method;

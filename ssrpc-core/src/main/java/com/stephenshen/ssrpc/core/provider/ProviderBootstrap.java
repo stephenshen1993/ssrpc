@@ -57,7 +57,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SSProvider.class);
         rc = applicationContext.getBean(RegistryCenter.class);
         providers.forEach((k, v) -> System.out.println(k));
-        providers.values().forEach(x -> genInterface(x));
+        providers.values().forEach(this::genInterface);
     }
 
     @SneakyThrows
@@ -86,25 +86,23 @@ public class ProviderBootstrap implements ApplicationContextAware {
         rc.unregister(serviceMeta, instance);
     }
 
-    private void genInterface(Object x) {
-        Class<?>[] interfaces = x.getClass().getInterfaces();
-        for (Class<?> itfer : interfaces) {
-            Method[] methods = itfer.getMethods();
+    private void genInterface(Object impl) {
+        Class<?>[] interfaces = impl.getClass().getInterfaces();
+        for (Class<?> service : interfaces) {
+            Method[] methods = service.getMethods();
             for (Method method : methods) {
                 if (MethodUtils.checkLocalMethod(method)) {
                     continue;
                 }
-                createProvider(itfer, x, method);
+                createProvider(service, impl, method);
             }
         }
     }
 
-    private void createProvider(Class<?> itfer, Object x, Method method) {
-        ProviderMeta meta = new ProviderMeta();
-        meta.setMethod(method);
-        meta.setServiceImpl(x);
-        meta.setMethodSign(MethodUtils.methodSign(method));
-        System.out.println("create a provider: " + meta);
-        skeleton.add(itfer.getCanonicalName(), meta);
+    private void createProvider(Class<?> service, Object impl, Method method) {
+        ProviderMeta providerMeta = ProviderMeta.builder().method(method)
+                .serviceImpl(impl).methodSign(MethodUtils.methodSign(method)).build();
+        System.out.println("create a provider: " + providerMeta);
+        skeleton.add(service.getCanonicalName(), providerMeta);
     }
 }
