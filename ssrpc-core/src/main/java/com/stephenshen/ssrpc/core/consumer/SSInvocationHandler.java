@@ -47,7 +47,7 @@ public class SSInvocationHandler implements InvocationHandler {
         List<InstanceMeta> instances = context.getRouter().route(providers);
         InstanceMeta instance = context.getLoadBalancer().choose(instances);
         System.out.println("loadBalancer.choose(instances) ==> " + instance);
-        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toString());
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
