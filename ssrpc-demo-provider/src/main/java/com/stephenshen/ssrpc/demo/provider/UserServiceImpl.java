@@ -11,12 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- *
- * </p>
+ * User service impl
  *
  * @author stephenshen
- * @version 1.0
  * @date 2024/3/12 06:46
  */
 @Component
@@ -91,6 +88,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean getFlag(boolean flag) {
         return !flag;
+    }
+
+    @Override
+    public User findById(long id) {
+        return new User(Long.valueOf(id).intValue(), "SS");
+    }
+
+    @Override
+    public User ex(boolean flag) {
+        if (flag) throw new RuntimeException("just throw an exception");
+        return new User(100, "SS100");
     }
 
     @Override

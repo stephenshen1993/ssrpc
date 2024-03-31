@@ -37,6 +37,10 @@ public interface UserService {
 
     Boolean getFlag(boolean flag);
 
+    User findById(long id);
+
+    User ex(boolean flag);
+
     User[] findUsers(User[] users);
 
     //    User findById(long id);
