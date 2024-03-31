@@ -5,12 +5,9 @@ import lombok.Data;
 import java.lang.reflect.Method;
 
 /**
- * <p>
- *
- * </p>
+ * 描述Provider的映射关系
  *
  * @author stephenshen
- * @version 1.0
  * @date 2024/3/21 07:01
  */
 @Data
