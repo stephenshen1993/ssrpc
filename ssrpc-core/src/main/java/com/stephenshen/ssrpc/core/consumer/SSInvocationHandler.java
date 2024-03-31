@@ -5,6 +5,7 @@ import com.stephenshen.ssrpc.core.consumer.http.OkHttpInvoker;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -18,6 +19,7 @@ import java.util.*;
  * @version 1.0
  * @date 2024/3/18 07:30
  */
+@Slf4j
 public class SSInvocationHandler implements InvocationHandler {
 
     Class<?> service;
@@ -46,7 +48,7 @@ public class SSInvocationHandler implements InvocationHandler {
 
         List<InstanceMeta> instances = context.getRouter().route(providers);
         InstanceMeta instance = context.getLoadBalancer().choose(instances);
-        System.out.println("loadBalancer.choose(instances) ==> " + instance);
+        log.debug("loadBalancer.choose(instances) ==> " + instance);
         RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
 
         if (rpcResponse.isStatus()) {
@@ -54,7 +56,6 @@ public class SSInvocationHandler implements InvocationHandler {
             return TypeUtils.castMethodResult(method, data);
         } else {
             Exception ex = rpcResponse.getEx();
-            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }

@@ -9,6 +9,7 @@ import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.meta.ServiceMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,6 +32,7 @@ import java.util.Map;
  * @date 2024/3/18 07:12
  */
 @Data
+@Slf4j
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
 
     private ApplicationContext applicationContext;
@@ -64,7 +66,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
             List<Field> fields = MethodUtils.findAnnotationField(bean.getClass(), SSConsumer.class);
 
             fields.stream().forEach(field -> {
-                System.out.println("===> " + field.getName());
+                log.info("===> " + field.getName());
                 try {
                     Class<?> service = field.getType();
                     String serviceName = service.getCanonicalName();
@@ -86,7 +88,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         ServiceMeta serviceMeta = ServiceMeta.builder()
                 .app(app).namespace(namespace).env(env).name(service.getCanonicalName()).build();
         List<InstanceMeta> providers = rc.fetchAll(serviceMeta);
-        System.out.println(" ===> map to provider: ");
+        log.info(" ===> map to provider: ");
         providers.forEach(System.out::println);
 
         rc.subscribe(serviceMeta, event -> {

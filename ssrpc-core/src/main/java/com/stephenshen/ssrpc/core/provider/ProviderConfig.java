@@ -2,6 +2,7 @@ package com.stephenshen.ssrpc.core.provider;
 
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.core.annotation.Order;
  * @version 1.0
  * @date 2024/3/13 06:47
  */
+@Slf4j
 @Configuration
 public class ProviderConfig {
 
@@ -34,9 +36,9 @@ public class ProviderConfig {
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner providerBootstrap_runner(@Autowired ProviderBootstrap providerBootstrap) {
         return x -> {
-            System.out.println("providerBootstrap starting ...");
+            log.info("providerBootstrap starting ...");
             providerBootstrap.start();
-            System.out.println("providerBootstrap started ...");
+            log.info("providerBootstrap started ...");
         };
     }
 

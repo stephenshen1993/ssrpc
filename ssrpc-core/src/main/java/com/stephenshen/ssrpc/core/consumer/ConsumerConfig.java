@@ -6,6 +6,7 @@ import com.stephenshen.ssrpc.core.api.Router;
 import com.stephenshen.ssrpc.core.cluster.RoundRibonLoadBalancer;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -22,6 +23,7 @@ import org.springframework.core.annotation.Order;
  * @version 1.0
  * @date 2024/3/18 07:14
  */
+@Slf4j
 @Configuration
 public class ConsumerConfig {
 
@@ -37,9 +39,9 @@ public class ConsumerConfig {
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
         return x -> {
-            System.out.println("consumerBootstrap starting ...");
+            log.info("consumerBootstrap starting ...");
             consumerBootstrap.start();
-            System.out.println("consumerBootstrap started ...");
+            log.info("consumerBootstrap started ...");
         };
     }
 

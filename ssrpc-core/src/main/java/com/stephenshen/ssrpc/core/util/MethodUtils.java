@@ -1,5 +1,7 @@
 package com.stephenshen.ssrpc.core.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -8,14 +10,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * <p>
- *
- * </p>
+ * 类型转换工具类
  *
  * @author stephenshen
- * @version 1.0
  * @date 2024/3/20 07:27
  */
+@Slf4j
 public class MethodUtils {
 
     public static boolean checkLocalMethod(final String method) {
