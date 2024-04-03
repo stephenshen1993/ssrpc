@@ -1,10 +1,7 @@
 package com.stephenshen.ssrpc.core.consumer;
 
 import com.stephenshen.ssrpc.core.annotation.SSConsumer;
-import com.stephenshen.ssrpc.core.api.LoadBalancer;
-import com.stephenshen.ssrpc.core.api.RegistryCenter;
-import com.stephenshen.ssrpc.core.api.Router;
-import com.stephenshen.ssrpc.core.api.RpcContext;
+import com.stephenshen.ssrpc.core.api.*;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.meta.ServiceMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
@@ -54,10 +51,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         Router<InstanceMeta> router = applicationContext.getBean(Router.class);
         LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
 
         RpcContext context = new RpcContext();
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
+        context.setFilters(filters);
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {

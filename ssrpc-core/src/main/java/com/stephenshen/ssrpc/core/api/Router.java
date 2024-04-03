@@ -3,12 +3,9 @@ package com.stephenshen.ssrpc.core.api;
 import java.util.List;
 
 /**
- * <p>
- *
- * </p>
+ * 路由器
  *
  * @author stephenshen
- * @version 1.0
  * @date 2024/3/24 16:28
  */
 public interface Router<T> {
