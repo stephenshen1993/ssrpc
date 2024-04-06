@@ -46,7 +46,9 @@ public class SsrpcDemoConsumerApplication {
 
     @Bean
     public ApplicationRunner consumer_runner() {
-        return x -> testAll();
+        return x -> {
+            // testAll();
+        };
     }
 
     private void testAll() {

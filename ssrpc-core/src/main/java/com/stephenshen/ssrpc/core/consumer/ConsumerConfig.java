@@ -6,6 +6,7 @@ import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.api.Router;
 import com.stephenshen.ssrpc.core.cluster.RoundRibonLoadBalancer;
 import com.stephenshen.ssrpc.core.filter.CacheFilter;
+import com.stephenshen.ssrpc.core.filter.MockFilter;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
@@ -63,8 +64,13 @@ public class ConsumerConfig {
         return new ZkRegistryCenter();
     }
 
+//    @Bean
+//    public Filter filter1() {
+//        return new CacheFilter();
+//    }
+
     @Bean
-    public Filter filter() {
-        return new CacheFilter();
+    public Filter filte2() {
+        return new MockFilter();
     }
 }

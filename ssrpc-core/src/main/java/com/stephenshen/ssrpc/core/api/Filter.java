@@ -12,6 +12,10 @@ public interface Filter {
 
     Object postfilter(RpcRequest request, RpcResponse response, Object result);
 
+    // A -> B -> C 有问题的
+    // - -> - -> D 还有问题
+    // - -> D MOCK
+
     Filter Default = new Filter() {
         @Override
         public Object prefilter(RpcRequest request) {
