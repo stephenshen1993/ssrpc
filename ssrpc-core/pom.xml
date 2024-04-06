@@ -6,7 +6,6 @@
         <groupId>com.stephenshen</groupId>
         <artifactId>ssrpc</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-<!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
     </parent>
     <artifactId>ssrpc-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>

@@ -6,7 +6,6 @@
         <groupId>com.stephenshen</groupId>
         <artifactId>ssrpc</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-<!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
     </parent>
     <artifactId>ssrpc-demo-provider</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -18,7 +17,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.2.3</version>
+                <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -26,12 +25,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>com.stephenshen</groupId>
-            <artifactId>ssrpc-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
         <dependency>
             <groupId>com.stephenshen</groupId>
             <artifactId>ssrpc-demo-api</artifactId>
@@ -44,15 +37,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.stephenshen</groupId>
+            <artifactId>ssrpc-core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
