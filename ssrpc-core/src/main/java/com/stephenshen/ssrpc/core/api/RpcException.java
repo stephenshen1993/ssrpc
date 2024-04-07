@@ -4,31 +4,33 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
+ * Rpc 统一异常类
+ *
  * @author stephenshen
  * @create 2024/04/08 06:44:55
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SsrpcException extends RuntimeException {
+public class RpcException extends RuntimeException {
 
     private String errCode;
 
-    public SsrpcException() {
+    public RpcException() {
     }
 
-    public SsrpcException(String message) {
+    public RpcException(String message) {
         super(message);
     }
 
-    public SsrpcException(String message, Throwable cause) {
+    public RpcException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SsrpcException(Throwable cause) {
+    public RpcException(Throwable cause) {
         super(cause);
     }
 
-    public SsrpcException(Throwable cause, String errCode) {
+    public RpcException(Throwable cause, String errCode) {
         super(cause);
         this.errCode = errCode;
     }

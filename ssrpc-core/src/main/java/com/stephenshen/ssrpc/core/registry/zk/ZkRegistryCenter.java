@@ -1,7 +1,7 @@
 package com.stephenshen.ssrpc.core.registry.zk;
 
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
-import com.stephenshen.ssrpc.core.api.SsrpcException;
+import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.meta.ServiceMeta;
 import com.stephenshen.ssrpc.core.registry.ChangedListener;
@@ -67,7 +67,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             log.info(" ===> register to zk: " + instancePath);
             client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
         } catch (Exception e) {
-            throw new SsrpcException(e);
+            throw new RpcException(e);
         }
     }
 
@@ -84,7 +84,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             log.info(" ===> unregister from zk: " + instancePath);
             client.delete().quietly().forPath(instancePath);
         } catch (Exception e) {
-            throw new SsrpcException(e);
+            throw new RpcException(e);
         }
     }
 
@@ -98,7 +98,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             modes.forEach(System.out::println);
             return mapInstance(modes);
         } catch (Exception e) {
-            throw new SsrpcException(e);
+            throw new RpcException(e);
         }
     }
 
