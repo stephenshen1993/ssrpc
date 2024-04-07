@@ -31,6 +31,8 @@ public interface UserService {
     long[] getLongIds();
     int[] getIds(int[] ids);
 
+    User[] findUsers(User[] users);
+
     List<User> getList(List<User> userList);
 
     Map<String, User> getMap(Map<String, User> userMap);
@@ -41,7 +43,5 @@ public interface UserService {
 
     User ex(boolean flag);
 
-    User[] findUsers(User[] users);
-
-    //    User findById(long id);
+    User find(int timeout);
 }

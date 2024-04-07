@@ -34,9 +34,14 @@ public class SsrpcDemoConsumerApplication {
     @SSConsumer
     private OrderService orderService;
 
-    @RequestMapping("/")
+    @RequestMapping("/api/")
     public User findById(@RequestParam("id") int id){
         return userService.findById(id);
+    }
+
+    @RequestMapping("/find/")
+    public User find(@RequestParam("timeout") int timeout){
+        return userService.find(timeout);
     }
 
     public static void main(String[] args) {
@@ -47,7 +52,10 @@ public class SsrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner() {
         return x -> {
-             testAll();
+            long start = System.currentTimeMillis();
+            userService.find(100);
+            System.out.println("userService.find take " + (System.currentTimeMillis() - start) + " ms");
+            //testAll();
         };
     }
 

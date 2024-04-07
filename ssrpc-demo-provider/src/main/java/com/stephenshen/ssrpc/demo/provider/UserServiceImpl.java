@@ -76,6 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User[] findUsers(User[] users) {
+        return users;
+    }
+
+    @Override
     public List<User> getList(List<User> userList) {
         return userList;
     }
@@ -102,7 +107,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User[] findUsers(User[] users) {
-        return users;
+    public User find(int timeout) {
+        String port = environment.getProperty("server.port");
+        if ("8081".equals(port)) {
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new User(1001, "SS1001-" + port);
     }
 }
