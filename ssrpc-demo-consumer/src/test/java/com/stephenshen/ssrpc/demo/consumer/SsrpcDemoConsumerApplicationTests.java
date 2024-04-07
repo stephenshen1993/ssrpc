@@ -1,5 +1,6 @@
 package com.stephenshen.ssrpc.demo.consumer;
 
+import com.stephenshen.ssrpc.core.test.TestZKServer;
 import com.stephenshen.ssrpc.demo.provider.SsrpcDemoProviderApplication;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,17 +14,23 @@ class SsrpcDemoConsumerApplicationTests {
 
     static  ConfigurableApplicationContext context;
 
+    static TestZKServer zkServer = new TestZKServer();
+
     @BeforeAll
     static void init() {
-        context = SpringApplication.run(SsrpcDemoProviderApplication.class, "--server.port=8084", "loggging.level.com.stephenshen.ssrpc=debugg");
+        zkServer.start();
+        context = SpringApplication.run(SsrpcDemoProviderApplication.class,
+                "--server.port=8084", "--ssrpc.zkServer=localhost:2182",
+                "loggging.level.com.stephenshen.ssrpc=debugg");
     }
     @Test
     void contextLoads() {
-        System.out.println(" ===> aaa .... ");
+        System.out.println(" ===> SsrpcDemoConsumerApplicationTests  .... ");
     }
 
     @AfterAll
     static void destroy() {
         SpringApplication.exit(context, () -> 1);
+        zkServer.stop();
     }
 }

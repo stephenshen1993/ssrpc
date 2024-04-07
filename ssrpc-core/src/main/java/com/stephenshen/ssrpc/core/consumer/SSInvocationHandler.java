@@ -74,11 +74,9 @@ public class SSInvocationHandler implements InvocationHandler {
 
     private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
         if (rpcResponse.isStatus()) {
-            Object data = rpcResponse.getData();
-            return TypeUtils.castMethodResult(method, data);
+            return TypeUtils.castMethodResult(method, rpcResponse.getData());
         } else {
-            Exception ex = rpcResponse.getEx();
-            throw new RuntimeException(ex);
+            throw new RuntimeException(rpcResponse.getEx());
         }
     }
 }

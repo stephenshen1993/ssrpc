@@ -57,7 +57,7 @@ public class ScanPackagesUtils {
     }
 
     public static void main(String[] args) {
-        String packages = "cn.kimmking.kkrpc";
+        String packages = "com.stephenshen.ssrpc";
 
         System.out.println(" 1. *********** ");
         System.out.println(" => scan all classes for packages: " + packages);
