@@ -2,6 +2,7 @@ package com.stephenshen.ssrpc.core.provider;
 
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
+import com.stephenshen.ssrpc.core.api.SsrpcException;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
 import org.springframework.util.MultiValueMap;
@@ -36,9 +37,9 @@ public class ProviderInvoker {
             rpcResponse.setData(result);
             return rpcResponse;
         } catch (InvocationTargetException e) {
-            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
+            rpcResponse.setEx(new SsrpcException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e) {
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
+            rpcResponse.setEx(new SsrpcException(e.getMessage()));
         }
         return rpcResponse;
     }
