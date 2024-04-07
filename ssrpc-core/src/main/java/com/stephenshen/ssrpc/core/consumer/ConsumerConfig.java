@@ -64,13 +64,18 @@ public class ConsumerConfig {
         return new ZkRegistryCenter();
     }
 
-//    @Bean
-//    public Filter filter1() {
-//        return new CacheFilter();
-//    }
+    @Bean
+    public Filter defaultFilter() {
+        return Filter.Default;
+    }
 
     @Bean
-    public Filter filte2() {
-        return new MockFilter();
+    public Filter filter1() {
+        return new CacheFilter();
     }
+
+//    @Bean
+//    public Filter filte2() {
+//        return new MockFilter();
+//    }
 }
