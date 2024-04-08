@@ -31,9 +31,6 @@ public class SsrpcDemoConsumerApplication {
     @SSConsumer
     private UserService userService;
 
-    @SSConsumer
-    private OrderService orderService;
-
     @RequestMapping("/api/")
     public User findById(@RequestParam("id") int id){
         return userService.findById(id);
@@ -52,10 +49,7 @@ public class SsrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumer_runner() {
         return x -> {
-            long start = System.currentTimeMillis();
-            userService.find(100);
-            System.out.println("userService.find take " + (System.currentTimeMillis() - start) + " ms");
-            //testAll();
+            testAll();
         };
     }
 
@@ -149,6 +143,15 @@ public class SsrpcDemoConsumerApplication {
         } catch (RuntimeException e) {
             System.out.println(" ===> exception: " + e.getMessage());
         }
+
+        System.out.println("Case 18. >>===[测试服务端抛出一个超时重试后成功的场景]===");
+        // 超时设置的【漏斗原则】
+        // A 2000 -> B 1500 -> C 1200 -> D 1000
+        long start = System.currentTimeMillis();
+        userService.find(1100);
+        userService.find(1100);
+        System.out.println("userService.find take "
+                + (System.currentTimeMillis()-start) + " ms");
     }
 
 }
