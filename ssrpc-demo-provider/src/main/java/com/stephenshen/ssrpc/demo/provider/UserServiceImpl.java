@@ -112,8 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User find(int timeout) {
         String port = environment.getProperty("server.port");
-        if (Arrays.stream(timeoutPorts.split(",")).anyMatch(port::equals))
-        if ("8081".equals(port) || "8094".equals(port)) {
+        if (Arrays.stream(timeoutPorts.split(",")).anyMatch(port::equals)) {
             try {
                 Thread.sleep(timeout);
             } catch (InterruptedException e) {

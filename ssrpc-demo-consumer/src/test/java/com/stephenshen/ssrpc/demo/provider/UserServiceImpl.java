@@ -106,6 +106,8 @@ public class UserServiceImpl implements UserService {
         return new User(100, "SS100");
     }
 
+    String timeoutPorts = "8081, 8094";
+
     @Override
     public User find(int timeout) {
         String port = environment.getProperty("server.port");
@@ -117,5 +119,9 @@ public class UserServiceImpl implements UserService {
             }
         }
         return new User(1001, "SS1001-" + port);
+    }
+
+    public void setTimeoutPorts(String timeoutPorts) {
+        this.timeoutPorts = timeoutPorts;
     }
 }
