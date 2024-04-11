@@ -2,6 +2,7 @@ package com.stephenshen.ssrpc.core.consumer;
 
 import com.stephenshen.ssrpc.core.api.*;
 import com.stephenshen.ssrpc.core.consumer.http.OkHttpInvoker;
+import com.stephenshen.ssrpc.core.governance.SlidingTimeWindow;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.util.MethodUtils;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
@@ -10,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.*;
 import java.net.SocketTimeoutException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -25,9 +29,17 @@ public class SSInvocationHandler implements InvocationHandler {
 
     Class<?> service;
     RpcContext context;
-    List<InstanceMeta> providers;
+    final List<InstanceMeta> providers;
+
+    final List<InstanceMeta> isolatedProviders = new ArrayList<>();
+
+    final List<InstanceMeta> halfOpenProviders = new ArrayList<>();
+
+    Map<String, SlidingTimeWindow> windows = new HashMap<>();
 
     HttpInvoker httpInvoker;
+
+    ScheduledExecutorService executor;
 
     public SSInvocationHandler(Class<?> service, RpcContext context, List<InstanceMeta> providers) {
         this.service = service;
@@ -35,6 +47,14 @@ public class SSInvocationHandler implements InvocationHandler {
         this.providers = providers;
         int timeout = Integer.parseInt(context.getParameters().getOrDefault("app.timeout", "1000"));
         this.httpInvoker = new OkHttpInvoker(timeout);
+        this.executor = Executors.newScheduledThreadPool(1);
+        this.executor.scheduleWithFixedDelay(this::halfOpen, 10, 60, TimeUnit.SECONDS);
+    }
+
+    private void halfOpen() {
+        log.debug(" ===> half opem isolatedProviders: " + isolatedProviders);
+        halfOpenProviders.clear();
+        halfOpenProviders.addAll(isolatedProviders);
     }
 
     @Override
@@ -61,12 +81,52 @@ public class SSInvocationHandler implements InvocationHandler {
                     }
                 }
 
-                List<InstanceMeta> instances = context.getRouter().route(providers);
-                InstanceMeta instance = context.getLoadBalancer().choose(instances);
-                log.debug("loadBalancer.choose(instances) ==> " + instance);
+                InstanceMeta instance;
+                synchronized (halfOpenProviders) {
+                    if (halfOpenProviders.isEmpty()) {
+                        List<InstanceMeta> instances = context.getRouter().route(providers);
+                        instance = context.getLoadBalancer().choose(instances);
+                        log.debug("loadBalancer.choose(instances) ==> " + instance);
+                    } else {
+                        instance = halfOpenProviders.remove(0);
+                        log.debug(" check alive instance ==> {}", instance);
+                    }
+                }
 
-                RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
-                Object result = castReturnResult(method, rpcResponse);
+                RpcResponse<?> rpcResponse;
+                Object result;
+
+                String url = instance.toUrl();
+                try {
+                    rpcResponse = httpInvoker.post(rpcRequest, url);
+                    result = castReturnResult(method, rpcResponse);
+                } catch (Exception e) {
+                    // 故障的规则统计和隔离
+                    // 每一次异常，记录一次，统计30s的异常
+
+                    SlidingTimeWindow window = windows.get(url);
+                    if (window == null) {
+                        window = new SlidingTimeWindow();
+                        windows.put(url, window);
+                    }
+
+                    window.record(System.currentTimeMillis());
+                    log.debug("instance {} in window with {}", url, window.getSum());
+                    // 发生了10次，就做故障隔离
+                    if (window.getSum() >= 10) {
+                        isolate(instance);
+                    }
+
+                    throw e;
+                }
+
+                synchronized (providers) {
+                    if (!providers.contains(instance)) {
+                        isolatedProviders.remove(instance);
+                        providers.add(instance);
+                        log.debug("instance {} is recoved, isolatedProviders={}, providers={}", instance, isolatedProviders, providers);
+                    }
+                }
 
                 // 这里拿到的可能不是最终值，需要再设计一下
                 for (Filter filter : this.context.getFilters()) {
@@ -83,6 +143,14 @@ public class SSInvocationHandler implements InvocationHandler {
             }
         }
         return null;
+    }
+
+    private void isolate(InstanceMeta instance) {
+        log.debug(" ===> isolate insctance " + instance);
+        providers.remove(instance);
+        log.debug(" ===> providers " + providers);
+        isolatedProviders.add(instance);
+        log.debug(" ===> isolatedProviders " + isolatedProviders);
     }
 
     private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
