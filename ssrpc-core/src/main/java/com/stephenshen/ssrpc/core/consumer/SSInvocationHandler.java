@@ -35,7 +35,7 @@ public class SSInvocationHandler implements InvocationHandler {
 
     final List<InstanceMeta> halfOpenProviders = new ArrayList<>();
 
-    Map<String, SlidingTimeWindow> windows = new HashMap<>();
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
 
     HttpInvoker httpInvoker;
 
@@ -103,18 +103,19 @@ public class SSInvocationHandler implements InvocationHandler {
                 } catch (Exception e) {
                     // 故障的规则统计和隔离
                     // 每一次异常，记录一次，统计30s的异常
+                    synchronized (windows) {
+                        SlidingTimeWindow window = windows.get(url);
+                        if (window == null) {
+                            window = new SlidingTimeWindow();
+                            windows.put(url, window);
+                        }
 
-                    SlidingTimeWindow window = windows.get(url);
-                    if (window == null) {
-                        window = new SlidingTimeWindow();
-                        windows.put(url, window);
-                    }
-
-                    window.record(System.currentTimeMillis());
-                    log.debug("instance {} in window with {}", url, window.getSum());
-                    // 发生了10次，就做故障隔离
-                    if (window.getSum() >= 10) {
-                        isolate(instance);
+                        window.record(System.currentTimeMillis());
+                        log.debug("instance {} in window with {}", url, window.getSum());
+                        // 发生了10次，就做故障隔离
+                        if (window.getSum() >= 10) {
+                            isolate(instance);
+                        }
                     }
 
                     throw e;
