@@ -6,6 +6,7 @@ import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.api.Router;
 import com.stephenshen.ssrpc.core.cluster.GrayRouter;
 import com.stephenshen.ssrpc.core.cluster.RoundRibonLoadBalancer;
+import com.stephenshen.ssrpc.core.filter.ParameterFilter;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,7 @@ public class ConsumerConfig {
 
     @Bean
     public Filter defaultFilter() {
-        return Filter.Default;
+        return new ParameterFilter();
     }
 
 //    @Bean

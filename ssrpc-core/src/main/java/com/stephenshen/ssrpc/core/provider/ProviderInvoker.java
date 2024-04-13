@@ -1,10 +1,12 @@
 package com.stephenshen.ssrpc.core.provider;
 
+import com.stephenshen.ssrpc.core.api.RpcContext;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +21,7 @@ import java.util.Optional;
  * @author stephenshen
  * @date 2024/3/27 07:28
  */
+@Slf4j
 public class ProviderInvoker {
 
     private final MultiValueMap<String, ProviderMeta> skeleton;
@@ -28,6 +31,10 @@ public class ProviderInvoker {
     }
 
     public RpcResponse<Object> invoke(RpcRequest request) {
+        log.debug(" ===> ProviderInvoker.invoke(request:{})", request);
+        if(!request.getParams().isEmpty()) {
+            request.getParams().forEach(RpcContext::setContextParameter);
+        }
         RpcResponse<Object> rpcResponse = new RpcResponse();
         List<ProviderMeta> providerMetas = skeleton.get(request.getService());
         try {
@@ -44,7 +51,10 @@ public class ProviderInvoker {
         } catch (IllegalAccessException | IllegalArgumentException e) {
             // e.printStackTrace();
             rpcResponse.setEx(new RpcException(e.getMessage()));
+        } finally {
+            RpcContext.ContextParameters.get().clear(); // 防止内存泄露和上下文污染
         }
+        log.debug(" ===> ProviderInvoker.invoke() = {}", rpcResponse);
         return rpcResponse;
     }
 
