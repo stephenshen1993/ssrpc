@@ -19,7 +19,6 @@ import org.apache.zookeeper.CreateMode;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,17 +109,18 @@ public class ZkRegistryCenter implements RegistryCenter {
         return modes.stream().map(x -> {
             String[] strs = x.split("_");
             InstanceMeta instance = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            String nodePath = servicePath + "/" + x;
+            byte[] bytes;
             try {
-                String nodePath = servicePath + "/" + x;
-                byte[] bytes = client.getData().forPath(nodePath);
-                JSONObject jsonObject = JSON.parseObject(new String(bytes));
-                jsonObject.forEach((k, v) -> {
-                    System.out.println(k + " -> " + v);
-                    instance.getParameters().put(k, v == null ? null : v.toString());
-                });
+                bytes = client.getData().forPath(nodePath);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            JSONObject jsonObject = JSON.parseObject(new String(bytes));
+            jsonObject.forEach((k, v) -> {
+                System.out.println(k + " -> " + v);
+                instance.getParameters().put(k, v == null ? null : v.toString());
+            });
             return instance;
         }).collect(Collectors.toList());
     }

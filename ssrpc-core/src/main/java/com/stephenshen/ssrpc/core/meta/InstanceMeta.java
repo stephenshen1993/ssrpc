@@ -40,8 +40,13 @@ public class InstanceMeta {
         return String.format("%s://%s:%d/%s", scheme, host, port, context);
     }
 
-    public static  InstanceMeta http(String host, Integer port) {
+    public static InstanceMeta http(String host, Integer port) {
         return new InstanceMeta("http", host, port, "");
+    }
+
+    public InstanceMeta addParams(Map<String, String> params) {
+        this.parameters.putAll(params);
+        return this;
     }
 
     public String toMetas() {

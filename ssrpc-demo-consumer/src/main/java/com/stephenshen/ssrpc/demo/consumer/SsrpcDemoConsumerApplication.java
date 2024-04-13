@@ -29,6 +29,9 @@ public class SsrpcDemoConsumerApplication {
     @SSConsumer
     private UserService userService;
 
+    @Autowired
+    private Router router;
+
     @RequestMapping("/api/")
     public User findById(@RequestParam("id") int id){
         return userService.findById(id);
@@ -38,9 +41,6 @@ public class SsrpcDemoConsumerApplication {
     public User find(@RequestParam("timeout") int timeout){
         return userService.find(timeout);
     }
-
-    @Autowired
-    Router router;
 
     @RequestMapping("/gray/")
     public String gray(@RequestParam("ratio") int ratio){
@@ -156,7 +156,7 @@ public class SsrpcDemoConsumerApplication {
         // A 2000 -> B 1500 -> C 1200 -> D 1000
         long start = System.currentTimeMillis();
         userService.find(1100);
-//        userService.find(1100);
+        userService.find(1100);
         System.out.println("userService.find take "
                 + (System.currentTimeMillis()-start) + " ms");
     }
