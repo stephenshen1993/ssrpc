@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,22 +19,19 @@ import org.springframework.core.annotation.Order;
 import java.util.List;
 
 /**
- * <p>
- *
- * </p>
+ * config for consumer
  *
  * @author stephenshen
- * @version 1.0
  * @date 2024/3/18 07:14
  */
 @Slf4j
 @Configuration
 public class ConsumerConfig {
 
-    @Value("${ssrpc.providers}")
+    @Value("${ssrpc.providers:}")
     String servers;
 
-    @Value("${app.grayRatio}")
+    @Value("${app.grayRatio:0}")
     private int grayRatio;
 
     @Value("${app.id:app1}")
@@ -60,19 +58,17 @@ public class ConsumerConfig {
     @Value("${app.halfOpenDelay:60000}")
     private int halfOpenDelay;
 
-    @Autowired
-    ApplicationContext applicationContext;
-
     @Bean
     public ConsumerBootstrap createConsumerBootstrap() {
         return new ConsumerBootstrap();
     }
 
     @Bean
-    @Order(Integer.MIN_VALUE)
+    @Order(Integer.MIN_VALUE + 1)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
         return x -> {
             log.info("consumerBootstrap starting ...");
+            System.out.println("ssrpc.providers => " + String.join(",", servers));
             consumerBootstrap.start();
             log.info("consumerBootstrap started ...");
         };
@@ -89,6 +85,7 @@ public class ConsumerConfig {
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
     public RegistryCenter consumer_rc(){
         return new ZkRegistryCenter();
     }

@@ -4,8 +4,9 @@ import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 
 /**
+ * Interface for http invoke
+ *
  * @author stephenshen
- * @version 1.0
  * @date 2024/3/27 07:59
  */
 public interface HttpInvoker {
