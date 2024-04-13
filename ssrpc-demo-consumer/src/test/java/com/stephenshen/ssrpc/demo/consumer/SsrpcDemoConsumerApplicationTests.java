@@ -32,16 +32,28 @@ class SsrpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         context1 = SpringApplication.run(SsrpcDemoProviderApplication.class,
-                "--server.port=8094", "--ssrpc.zkServer=localhost:2182",
-                "--loggging.level.com.stephenshen.ssrpc=info", "--app.metas={dc:'bj',gray:'false',unit:'B001'}");
+                "--server.port=8094",
+                "--ssrpc.zk.server=localhost:2182",
+                "--ssrpc.app.env=test",
+                "--logging.level.com.stephenshen.ssrpc=info",
+                "--ssrpc.provider.metas.dc=bj",
+                "--ssrpc.provider.metas.gray=false",
+                "--ssrpc.provider.metas.unit=B001"
+        );
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8095    ========== ");
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         context2 = SpringApplication.run(SsrpcDemoProviderApplication.class,
-                "--server.port=8095", "--ssrpc.zkServer=localhost:2182",
-                "--loggging.level.com.stephenshen.ssrpc=info", "--app.metas={dc:'bj',gray:'false',unit:'B001'}");
+                "--server.port=8095",
+                "--ssrpc.zk.server=localhost:2182",
+                "--ssrpc.app.env=test",
+                "--logging.level.com.stephenshen.ssrpc=info",
+                "--ssrpc.provider.metas.dc=bj",
+                "--ssrpc.provider.metas.gray=false",
+                "--ssrpc.provider.metas.unit=B002"
+        );
     }
     @Test
     void contextLoads() {

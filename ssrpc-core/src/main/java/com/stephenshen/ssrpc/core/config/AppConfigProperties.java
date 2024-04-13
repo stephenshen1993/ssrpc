@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfigProperties {
 
     // for app instance
-    private String id;
+    private String id = "app1";
 
-    private String namespace;
+    private String namespace = "public";
 
-    private String env;
+    private String env = "dev";
 }
