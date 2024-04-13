@@ -1,6 +1,7 @@
 package com.stephenshen.ssrpc.core.registry.zk;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
@@ -62,7 +63,7 @@ public class ZkRegistryCenter implements RegistryCenter {
         try {
             // 创建服务的持久化节点
             if (client.checkExists().forPath(servicePath) == null) {
-                client.create().withMode(CreateMode.PERSISTENT).forPath(servicePath, "service".getBytes());
+                client.create().withMode(CreateMode.PERSISTENT).forPath(servicePath, service.toMetas().getBytes());
             }
             // 创建实例的临时性节点
             String instancePath = servicePath + "/" + instance.toPath();
@@ -97,6 +98,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             // 获取所有子节点
             List<String> nodes = client.getChildren().forPath(servicePath);
             log.info(" ===> fetchAll from zk: " + servicePath);
+            nodes.forEach(System.out::println);
             return mapInstance(servicePath, nodes);
         } catch (Exception e) {
             throw new RpcException(e);
@@ -106,21 +108,19 @@ public class ZkRegistryCenter implements RegistryCenter {
     @NotNull
     private List<InstanceMeta> mapInstance(String servicePath, List<String> modes) {
         return modes.stream().map(x -> {
-
             String[] strs = x.split("_");
             InstanceMeta instance = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
-            System.out.println(" instance: " + instance.toUrl());
-            String nodePath = servicePath + "/" + x;
-            byte[] bytes;
             try {
-                bytes = client.getData().forPath(nodePath);
+                String nodePath = servicePath + "/" + x;
+                byte[] bytes = client.getData().forPath(nodePath);
+                JSONObject jsonObject = JSON.parseObject(new String(bytes));
+                jsonObject.forEach((k, v) -> {
+                    System.out.println(k + " -> " + v);
+                    instance.getParameters().put(k, v == null ? null : v.toString());
+                });
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-            HashMap params = JSON.parseObject(new String(bytes), HashMap.class);
-            params.forEach((k, v) -> System.out.println(k + " -> " + v));
-            instance.setParameters(params);
             return instance;
         }).collect(Collectors.toList());
     }
