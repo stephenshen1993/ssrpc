@@ -1,19 +1,17 @@
 package com.stephenshen.ssrpc.demo.consumer;
 
 import com.stephenshen.ssrpc.core.annotation.SSConsumer;
-import com.stephenshen.ssrpc.core.api.RpcRequest;
-import com.stephenshen.ssrpc.core.api.RpcResponse;
+import com.stephenshen.ssrpc.core.api.Router;
+import com.stephenshen.ssrpc.core.cluster.GrayRouter;
 import com.stephenshen.ssrpc.core.consumer.ConsumerConfig;
-import com.stephenshen.ssrpc.demo.api.Order;
-import com.stephenshen.ssrpc.demo.api.OrderService;
 import com.stephenshen.ssrpc.demo.api.User;
 import com.stephenshen.ssrpc.demo.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +37,15 @@ public class SsrpcDemoConsumerApplication {
     @RequestMapping("/find/")
     public User find(@RequestParam("timeout") int timeout){
         return userService.find(timeout);
+    }
+
+    @Autowired
+    Router router;
+
+    @RequestMapping("/gray/")
+    public String gray(@RequestParam("ratio") int ratio){
+        ((GrayRouter)router).setGrayRatio(ratio);
+        return "OK-new gray ratio is " + ratio;
     }
 
     public static void main(String[] args) {

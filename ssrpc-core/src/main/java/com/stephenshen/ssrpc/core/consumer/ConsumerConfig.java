@@ -4,9 +4,8 @@ import com.stephenshen.ssrpc.core.api.Filter;
 import com.stephenshen.ssrpc.core.api.LoadBalancer;
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.api.Router;
+import com.stephenshen.ssrpc.core.cluster.GrayRouter;
 import com.stephenshen.ssrpc.core.cluster.RoundRibonLoadBalancer;
-import com.stephenshen.ssrpc.core.filter.CacheFilter;
-import com.stephenshen.ssrpc.core.filter.MockFilter;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,9 @@ public class ConsumerConfig {
     @Value("${ssrpc.providers}")
     String servers;
 
+    @Value("${app.grayRatio}")
+    private int grayRatio;
+
     @Bean
     public ConsumerBootstrap createConsumerBootstrap() {
         return new ConsumerBootstrap();
@@ -56,7 +58,7 @@ public class ConsumerConfig {
 
     @Bean
     public Router<InstanceMeta> router() {
-        return Router.Default;
+        return new GrayRouter(grayRatio);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")

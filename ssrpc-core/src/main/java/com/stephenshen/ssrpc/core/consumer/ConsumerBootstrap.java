@@ -65,6 +65,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         context.setFilters(filters);
         context.getParameters().put("app.retries", String.valueOf(retries));
         context.getParameters().put("app.timeout", String.valueOf(timeout));
+        // context.getParameters().put("app.grayRadio", String.valueOf(grayRadio));
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {
