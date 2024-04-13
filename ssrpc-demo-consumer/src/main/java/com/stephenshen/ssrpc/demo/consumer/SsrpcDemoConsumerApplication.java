@@ -4,7 +4,7 @@ import com.stephenshen.ssrpc.core.annotation.SSConsumer;
 import com.stephenshen.ssrpc.core.api.Router;
 import com.stephenshen.ssrpc.core.api.RpcContext;
 import com.stephenshen.ssrpc.core.cluster.GrayRouter;
-import com.stephenshen.ssrpc.core.consumer.ConsumerConfig;
+import com.stephenshen.ssrpc.core.config.ConsumerConfig;
 import com.stephenshen.ssrpc.demo.api.User;
 import com.stephenshen.ssrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

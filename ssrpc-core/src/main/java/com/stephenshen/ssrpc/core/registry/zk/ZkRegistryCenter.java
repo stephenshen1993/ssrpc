@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ZkRegistryCenter implements RegistryCenter {
 
-    @Value("${ssrpc.zkServer:localhost:2181}")
+    @Value("${ssrpc.zk.server:localhost:2181}")
     String server;
 
-    @Value("${ssrpc.zkRoot:ssrpc}")
+    @Value("${ssrpc.zk.root:ssrpc}")
     String root;
 
     private CuratorFramework client = null;

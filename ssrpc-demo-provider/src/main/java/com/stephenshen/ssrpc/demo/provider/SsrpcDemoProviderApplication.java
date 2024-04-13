@@ -2,7 +2,7 @@ package com.stephenshen.ssrpc.demo.provider;
 
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
-import com.stephenshen.ssrpc.core.provider.ProviderConfig;
+import com.stephenshen.ssrpc.core.config.ProviderConfig;
 import com.stephenshen.ssrpc.core.transport.SpringBootTransport;
 import com.stephenshen.ssrpc.demo.api.User;
 import com.stephenshen.ssrpc.demo.api.UserService;

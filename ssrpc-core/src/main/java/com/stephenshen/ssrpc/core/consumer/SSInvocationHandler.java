@@ -49,13 +49,14 @@ public class SSInvocationHandler implements InvocationHandler {
         this.service = service;
         this.context = context;
         this.providers = providers;
-        int timeout = Integer.parseInt(context.getParameters().getOrDefault("app.timeout", "1000"));
+        int timeout = Integer.parseInt(context.getParameters()
+                .getOrDefault("consumer.timeout", "1000"));
         this.httpInvoker = new OkHttpInvoker(timeout);
         this.executor = Executors.newScheduledThreadPool(1);
         int halfOpenInitialDelay = Integer.parseInt(context.getParameters()
-                .getOrDefault("app.halfOpenInitialDelay", "10000"));
+                .getOrDefault("consumer.halfOpenInitialDelay", "10000"));
         int halfOpenDelay = Integer.parseInt(context.getParameters()
-                .getOrDefault("app.halfOpenDelay", "60000"));
+                .getOrDefault("consumer.halfOpenDelay", "60000"));
         this.executor.scheduleWithFixedDelay(this::halfOpen, halfOpenInitialDelay, halfOpenDelay, TimeUnit.MILLISECONDS);
     }
 
@@ -77,8 +78,10 @@ public class SSInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        int retries = Integer.parseInt(context.getParameters().getOrDefault("app.retries", "1"));
-        int faultLimit = Integer.parseInt(context.getParameters().getOrDefault("app.faultLimit", "10"));
+        int retries = Integer.parseInt(context.getParameters()
+                .getOrDefault("consumer.retries", "1"));
+        int faultLimit = Integer.parseInt(context.getParameters()
+                .getOrDefault("consumer.faultLimit", "10"));
 
         while (retries -- > 0) {
             log.debug(" ===> retries: " + retries);

@@ -1,7 +1,7 @@
 package com.stephenshen.ssrpc.core.annotation;
 
-import com.stephenshen.ssrpc.core.consumer.ConsumerConfig;
-import com.stephenshen.ssrpc.core.provider.ProviderConfig;
+import com.stephenshen.ssrpc.core.config.ConsumerConfig;
+import com.stephenshen.ssrpc.core.config.ProviderConfig;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

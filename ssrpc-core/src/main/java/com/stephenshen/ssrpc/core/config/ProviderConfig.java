@@ -1,6 +1,8 @@
-package com.stephenshen.ssrpc.core.provider;
+package com.stephenshen.ssrpc.core.config;
 
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
+import com.stephenshen.ssrpc.core.provider.ProviderBootstrap;
+import com.stephenshen.ssrpc.core.provider.ProviderInvoker;
 import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
 import com.stephenshen.ssrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-
-import java.util.Map;
 
 /**
  * <p>
@@ -25,27 +25,20 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-@Import({SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
 
     @Value("${server.port:8080}")
     private String port;
 
-    @Value("${app.id:app1}")
-    private String app;
-
-    @Value("${app.namespace:public}")
-    private String namespace;
-
-    @Value("${app.env:dev}")
-    private String env;
-
-    @Value("#{${app.metas:{dc:'bj',gray:'false',unit:'B001'}}}")  //Spel
-    Map<String, String> metas;
+    @Autowired
+    AppConfigProperties appConfigProperties;
+    @Autowired
+    ProviderConfigProperties providerConfigProperties;
 
     @Bean
     ProviderBootstrap providerBootstrap() {
-        return new ProviderBootstrap(port, app, namespace, env, metas);
+        return new ProviderBootstrap(port, appConfigProperties, providerConfigProperties);
     }
 
     @Bean
