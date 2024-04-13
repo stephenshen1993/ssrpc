@@ -8,9 +8,13 @@ import com.stephenshen.ssrpc.core.util.MethodUtils;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -160,12 +164,12 @@ public class SSInvocationHandler implements InvocationHandler {
         if (rpcResponse.isStatus()) {
             return TypeUtils.castMethodResult(method, rpcResponse.getData());
         } else {
-            Exception exception = rpcResponse.getEx();
-            if (exception instanceof RpcException ex) {
-                throw ex;
-            } else {
-                throw new RpcException(exception, RpcException.UnknownEx);
+            RpcException exception = rpcResponse.getEx();
+            if(exception != null) {
+                log.error("response error.", exception);
+                throw exception;
             }
+            return null;
         }
     }
 }
