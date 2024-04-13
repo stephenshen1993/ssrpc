@@ -27,8 +27,8 @@ public class RpcContext {
         return parameters.get(key);
     }
 
-    // kkrpc.color = gray
-    // kkrpc.gtrace_id
+    // ssrpc.color = gray
+    // ssrpc.gtrace_id
     // gw -> service1 ->  service2(跨线程传递) ...
     // http headers
 
