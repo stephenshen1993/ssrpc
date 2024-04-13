@@ -156,7 +156,7 @@ public class SsrpcDemoConsumerApplication {
         // A 2000 -> B 1500 -> C 1200 -> D 1000
         long start = System.currentTimeMillis();
         userService.find(1100);
-        userService.find(1100);
+//        userService.find(1100);
         System.out.println("userService.find take "
                 + (System.currentTimeMillis()-start) + " ms");
     }
