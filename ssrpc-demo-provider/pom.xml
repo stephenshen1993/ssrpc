@@ -5,10 +5,10 @@
     <parent>
         <groupId>com.stephenshen</groupId>
         <artifactId>ssrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${ssrpc.version}</version>
     </parent>
     <artifactId>ssrpc-demo-provider</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${ssrpc.version}</version>
     <name>ssrpc-demo-provider</name>
     <description>ssrpc-demo-provider</description>
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.stephenshen</groupId>
             <artifactId>ssrpc-demo-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${ssrpc.version}</version>
         </dependency>
 
         <dependency>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.stephenshen</groupId>
             <artifactId>ssrpc-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${ssrpc.version}</version>
         </dependency>
     </dependencies>
 
