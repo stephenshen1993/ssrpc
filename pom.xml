@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stephenshen</groupId>
     <artifactId>ssrpc</artifactId>
-    <version>${ssrpc.version}</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>ssrpc</name>
     <description>ssrpc</description>
     <packaging>pom</packaging>
     <properties>
-        <ssrpc.version>0.0.1</ssrpc.version>
+        <ssrpc.version>0.0.2-SNAPSHOT</ssrpc.version>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
