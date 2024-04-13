@@ -22,6 +22,11 @@ public class RpcContext {
     LoadBalancer<InstanceMeta> loadBalancer;
 
     Map<String, String> parameters = new HashMap<>();
+
+    public String param(String key) {
+        return parameters.get(key);
+    }
+
     // kkrpc.color = gray
     // kkrpc.gtrace_id
     // gw -> service1 ->  service2(跨线程传递) ...

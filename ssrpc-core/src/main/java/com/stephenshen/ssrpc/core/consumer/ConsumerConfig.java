@@ -1,9 +1,6 @@
 package com.stephenshen.ssrpc.core.consumer;
 
-import com.stephenshen.ssrpc.core.api.Filter;
-import com.stephenshen.ssrpc.core.api.LoadBalancer;
-import com.stephenshen.ssrpc.core.api.RegistryCenter;
-import com.stephenshen.ssrpc.core.api.Router;
+import com.stephenshen.ssrpc.core.api.*;
 import com.stephenshen.ssrpc.core.cluster.GrayRouter;
 import com.stephenshen.ssrpc.core.cluster.RoundRibonLoadBalancer;
 import com.stephenshen.ssrpc.core.filter.ParameterFilter;
@@ -13,9 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,6 +36,33 @@ public class ConsumerConfig {
     @Value("${app.grayRatio}")
     private int grayRatio;
 
+    @Value("${app.id:app1}")
+    private String app;
+
+    @Value("${app.namespace:public}")
+    private String namespace;
+
+    @Value("${app.env:dev}")
+    private String env;
+
+    @Value("${app.retries:1}")
+    private int retries;
+
+    @Value("${app.timeout:1000}")
+    private int timeout;
+
+    @Value("${app.faultLimit:10}")
+    private int faultLimit;
+
+    @Value("${app.halfOpenInitialDelay:10000}")
+    private int halfOpenInitialDelay;
+
+    @Value("${app.halfOpenDelay:60000}")
+    private int halfOpenDelay;
+
+    @Autowired
+    ApplicationContext applicationContext;
+
     @Bean
     public ConsumerBootstrap createConsumerBootstrap() {
         return new ConsumerBootstrap();
@@ -53,7 +80,6 @@ public class ConsumerConfig {
 
     @Bean
     public LoadBalancer<InstanceMeta> loadBalancer() {
-        // return LoadBalancer.Default;
         return new RoundRibonLoadBalancer<>();
     }
 
@@ -72,13 +98,22 @@ public class ConsumerConfig {
         return new ParameterFilter();
     }
 
-//    @Bean
-//    public Filter filter1() {
-//        return new CacheFilter();
-//    }
-
-//    @Bean
-//    public Filter filte2() {
-//        return new MockFilter();
-//    }
+    @Bean
+    public RpcContext createContext(@Autowired Router router,
+                                    @Autowired LoadBalancer loadBalancer,
+                                    @Autowired List<Filter> filters) {
+        RpcContext context = new RpcContext();
+        context.setRouter(router);
+        context.setLoadBalancer(loadBalancer);
+        context.setFilters(filters);
+        context.getParameters().put("app.id", app);
+        context.getParameters().put("app.namespace", namespace);
+        context.getParameters().put("app.env", env);
+        context.getParameters().put("app.retries", String.valueOf(retries));
+        context.getParameters().put("app.timeout", String.valueOf(timeout));
+        context.getParameters().put("app.halfOpenInitialDelay", String.valueOf(halfOpenInitialDelay));
+        context.getParameters().put("app.faultLimit", String.valueOf(faultLimit));
+        context.getParameters().put("app.halfOpenDelay", String.valueOf(halfOpenDelay));
+        return context;
+    }
 }
