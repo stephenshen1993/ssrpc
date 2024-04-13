@@ -2,7 +2,8 @@ package com.stephenshen.ssrpc.core.cluster;
 
 import com.stephenshen.ssrpc.core.api.Router;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -13,14 +14,18 @@ import java.util.Random;
  * 灰度路由
  *
  * // 可以做一些灰度用户，某一次请求上加灰度标记
+ * // 结合蓝绿：
+ * // 100 都是normal
+ * // 100 都是灰度
  *
  * @author stephenshen
  * @date 2024/4/13 10:25:52
  */
 @Slf4j
-@Data
 public class GrayRouter implements Router<InstanceMeta> {
 
+    @Getter
+    @Setter
     private int grayRatio;
     private final Random random = new Random();
 

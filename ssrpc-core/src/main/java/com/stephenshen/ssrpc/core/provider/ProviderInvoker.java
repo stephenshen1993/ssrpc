@@ -38,10 +38,10 @@ public class ProviderInvoker {
             rpcResponse.setData(result);
             return rpcResponse;
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             rpcResponse.setEx(new RpcException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             rpcResponse.setEx(new RpcException(e.getMessage()));
         }
         return rpcResponse;
