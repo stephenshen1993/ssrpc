@@ -50,13 +50,49 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     @Value("${app.timeout}")
     private int timeout;
 
+    @Value("${app.faultLimit}")
+    private int faultLimit;
+
+    @Value("${app.halfOpenInitialDelay}")
+    private int halfOpenInitialDelay;
+
+    @Value("${app.halfOpenDelay}")
+    private int halfOpenDelay;
+
     private Map<String, Object> stub = new HashMap<>();
 
     public void start() {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        RpcContext context = createContext();
 
+        String[] names = applicationContext.getBeanDefinitionNames();
+        for (String name : names) {
+            Object bean = applicationContext.getBean(name);
+            List<Field> fields = MethodUtils.findAnnotationField(bean.getClass(), SSConsumer.class);
+            fields.stream().forEach(field -> {
+                Class<?> service = field.getType();
+                String serviceName = service.getCanonicalName();
+                log.info("===> {}", field.getName());
+                try {
+                    Object consumer = stub.get(serviceName);
+                    if (consumer == null) {
+                        consumer = createFromRegistry(service, context, rc);
+                        stub.put(serviceName, consumer);
+                    }
+                    field.setAccessible(true);
+                    field.set(bean, consumer);
+                } catch (IllegalAccessException ex) {
+                    // ignore and print it
+                    log.warn(" ==> Field[{}.{}] create consumer failed.", serviceName, field.getName());
+                    log.error("Ignore and print it as: ", ex);
+                }
+            });
+        }
+    }
+
+    private RpcContext createContext() {
         Router<InstanceMeta> router = applicationContext.getBean(Router.class);
         LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
 
         RpcContext context = new RpcContext();
@@ -65,31 +101,10 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         context.setFilters(filters);
         context.getParameters().put("app.retries", String.valueOf(retries));
         context.getParameters().put("app.timeout", String.valueOf(timeout));
-        // context.getParameters().put("app.grayRadio", String.valueOf(grayRadio));
-
-        String[] names = applicationContext.getBeanDefinitionNames();
-        for (String name : names) {
-            Object bean = applicationContext.getBean(name);
-
-            List<Field> fields = MethodUtils.findAnnotationField(bean.getClass(), SSConsumer.class);
-
-            fields.stream().forEach(field -> {
-                log.info("===> " + field.getName());
-                try {
-                    Class<?> service = field.getType();
-                    String serviceName = service.getCanonicalName();
-                    Object consumer = stub.get(serviceName);
-                    if (consumer == null) {
-                        consumer = createFromRegistry(service, context, rc);
-                        stub.put(serviceName, consumer);
-                    }
-                    field.setAccessible(true);
-                    field.set(bean, consumer);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
+        context.getParameters().put("app.faultLimit", String.valueOf(faultLimit));
+        context.getParameters().put("app.halfOpenInitialDelay", String.valueOf(halfOpenInitialDelay));
+        context.getParameters().put("app.halfOpenDelay", String.valueOf(halfOpenDelay));
+        return context;
     }
 
     private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter rc) {
