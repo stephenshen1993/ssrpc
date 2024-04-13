@@ -15,4 +15,4 @@ app:
 logging:
   level:
     root: error
-    com.stephenshen.ssrpc: debug
+    com.stephenshen.ssrpc: info
