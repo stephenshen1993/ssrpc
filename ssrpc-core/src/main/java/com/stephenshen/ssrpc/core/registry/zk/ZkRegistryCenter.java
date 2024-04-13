@@ -1,5 +1,6 @@
 package com.stephenshen.ssrpc.core.registry.zk;
 
+import com.alibaba.fastjson.JSON;
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
@@ -17,6 +18,7 @@ import org.apache.zookeeper.CreateMode;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             // 创建实例的临时性节点
             String instancePath = servicePath + "/" + instance.toPath();
             log.info(" ===> register to zk: " + instancePath);
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, instance.toMetas().getBytes());
         } catch (Exception e) {
             throw new RpcException(e);
         }
@@ -93,20 +95,33 @@ public class ZkRegistryCenter implements RegistryCenter {
         String servicePath = "/" + service.toPath();
         try {
             // 获取所有子节点
-            List<String> modes = client.getChildren().forPath(servicePath);
+            List<String> nodes = client.getChildren().forPath(servicePath);
             log.info(" ===> fetchAll from zk: " + servicePath);
-            modes.forEach(System.out::println);
-            return mapInstance(modes);
+            return mapInstance(servicePath, nodes);
         } catch (Exception e) {
             throw new RpcException(e);
         }
     }
 
     @NotNull
-    private static List<InstanceMeta> mapInstance(List<String> modes) {
+    private List<InstanceMeta> mapInstance(String servicePath, List<String> modes) {
         return modes.stream().map(x -> {
+
             String[] strs = x.split("_");
-            return InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            InstanceMeta instance = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            System.out.println(" instance: " + instance.toUrl());
+            String nodePath = servicePath + "/" + x;
+            byte[] bytes;
+            try {
+                bytes = client.getData().forPath(nodePath);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            HashMap params = JSON.parseObject(new String(bytes), HashMap.class);
+            params.forEach((k, v) -> System.out.println(k + " -> " + v));
+            instance.setParameters(params);
+            return instance;
         }).collect(Collectors.toList());
     }
 

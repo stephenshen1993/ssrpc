@@ -55,6 +55,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @Value("${app.env}")
     private String env;
 
+    @Value("#{${app.metas}}")  // Spel
+    private Map<String, String> metas;
+
     @PostConstruct  // init-method
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(SSProvider.class);
@@ -66,7 +69,8 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @SneakyThrows
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
-        this.instance = InstanceMeta.http(ip, Integer.valueOf(port));
+        instance = InstanceMeta.http(ip, Integer.valueOf(port));
+        instance.getParameters().putAll(metas);
         rc.start();
         skeleton.keySet().forEach(this::registerService);
     }
