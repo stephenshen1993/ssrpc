@@ -5,10 +5,10 @@
     <parent>
         <groupId>com.stephenshen</groupId>
         <artifactId>ssrpc</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>${ssrpc.version}</version>
     </parent>
     <artifactId>ssrpc-core</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>${ssrpc.version}</version>
     <name>ssrpc-core</name>
     <description>ssrpc-core</description>
     <dependencies>

@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stephenshen</groupId>
     <artifactId>ssrpc</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>${ssrpc.version}</version>
     <name>ssrpc</name>
     <description>ssrpc</description>
     <packaging>pom</packaging>
     <properties>
-        <ssrpc.version>0.0.3-SNAPSHOT</ssrpc.version>
+        <ssrpc.version>0.0.4-SNAPSHOT</ssrpc.version>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
@@ -23,4 +23,33 @@
         <module>ssrpc-demo-consumer</module>
     </modules>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>oss</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
