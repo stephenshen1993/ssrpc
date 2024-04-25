@@ -144,10 +144,12 @@ public class ZkRegistryCenter implements RegistryCenter {
             .setCacheData(true).setMaxDepth(2).build();
         cache.getListenable().addListener(
             (curator, event) -> {
-                // 有任何节点变动这里会执行
-                log.info("zk subscribe event: " + event);
-                List<InstanceMeta> nodes = fetchAll(service);
-                listener.fire(new Event(nodes));
+                synchronized (ZkRegistryCenter.class) {
+                    // 有任何节点变动这里会执行
+                    log.info("zk subscribe event: " + event);
+                    List<InstanceMeta> nodes = fetchAll(service);
+                    listener.fire(new Event(nodes));
+                }
             }
         );
         cache.start();
