@@ -16,9 +16,9 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,28 +31,41 @@ import java.util.stream.Collectors;
 public class ZkRegistryCenter implements RegistryCenter {
 
     @Value("${ssrpc.zk.server:localhost:2181}")
-    String server;
+    String servers;
 
     @Value("${ssrpc.zk.root:ssrpc}")
     String root;
 
     private CuratorFramework client = null;
+    private List<TreeCache> caches = new ArrayList<>();
+
+    private boolean running = false;
 
     @Override
-    public void start() {
+    public synchronized void start() {
+        if(running) {
+            log.info(" ===> zk client has started to server[{}/{}], ignored.", servers, root);
+            return;
+        }
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
         client = CuratorFrameworkFactory.builder()
-            .connectString(server)
-            .namespace(root)
+            .connectString(servers)
+            .namespace(root) // dubbo的group就是这个玩意儿
             .retryPolicy(retryPolicy)
             .build();
-        log.info(" ===> zk client starting to server[" + server + "/"+ root + "].");
+        log.info(" ===> zk client starting to server[" + servers + "/"+ root + "].");
         client.start();
     }
 
     @Override
-    public void stop() {
-        log.info(" ===> zk client stoped.");
+    public synchronized void stop() {
+        if(!running) {
+            log.info(" ===> zk client isn't running to server[{}/{}], ignored.", servers, root);
+            return;
+        }
+        log.info(" ===> zk tree cache closed.");
+        caches.forEach(TreeCache::close);
+        log.info(" ===> zk client stopped.");
         client.close();
     }
 
@@ -68,8 +81,8 @@ public class ZkRegistryCenter implements RegistryCenter {
             String instancePath = servicePath + "/" + instance.toPath();
             log.info(" ===> register to zk: " + instancePath);
             client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, instance.toMetas().getBytes());
-        } catch (Exception e) {
-            throw new RpcException(e);
+        } catch (Exception ex) {
+            throw new RpcException(ex);
         }
     }
 
@@ -85,8 +98,8 @@ public class ZkRegistryCenter implements RegistryCenter {
             String instancePath = servicePath + "/" + instance.toPath();
             log.info(" ===> unregister from zk: " + instancePath);
             client.delete().quietly().forPath(instancePath);
-        } catch (Exception e) {
-            throw new RpcException(e);
+        } catch (Exception ex) {
+            throw new RpcException(ex);
         }
     }
 
@@ -97,18 +110,17 @@ public class ZkRegistryCenter implements RegistryCenter {
             // 获取所有子节点
             List<String> nodes = client.getChildren().forPath(servicePath);
             log.info(" ===> fetchAll from zk: " + servicePath);
-            nodes.forEach(System.out::println);
-            return mapInstance(servicePath, nodes);
-        } catch (Exception e) {
-            throw new RpcException(e);
+            return mapInstance(nodes, servicePath);
+        } catch (Exception ex) {
+            throw new RpcException(ex);
         }
     }
 
-    @NotNull
-    private List<InstanceMeta> mapInstance(String servicePath, List<String> modes) {
+    private List<InstanceMeta> mapInstance(List<String> modes, String servicePath) {
         return modes.stream().map(x -> {
             String[] strs = x.split("_");
             InstanceMeta instance = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            System.out.println(" instance: " + instance.toUrl());
             String nodePath = servicePath + "/" + x;
             byte[] bytes;
             try {
@@ -139,5 +151,6 @@ public class ZkRegistryCenter implements RegistryCenter {
             }
         );
         cache.start();
+        caches.add(cache);
     }
 }

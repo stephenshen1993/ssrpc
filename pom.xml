@@ -38,7 +38,7 @@
     </developers>
 
     <properties>
-        <ssrpc.version>0.0.2</ssrpc.version>
+        <ssrpc.version>0.0.3-SNAPSHOT</ssrpc.version>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
