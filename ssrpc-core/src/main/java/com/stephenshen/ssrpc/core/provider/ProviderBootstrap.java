@@ -41,15 +41,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
     private String port;
     private AppConfigProperties appConfigProperties;
-    private ProviderConfigProperties providerConfigProperties;
+    private ProviderConfigProperties providerProperties;
 
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private InstanceMeta instance;
 
-    public ProviderBootstrap(String port, AppConfigProperties appConfigProperties, ProviderConfigProperties providerConfigProperties) {
+    public ProviderBootstrap(String port, AppConfigProperties appConfigProperties, ProviderConfigProperties providerProperties) {
         this.port = port;
         this.appConfigProperties = appConfigProperties;
-        this.providerConfigProperties = providerConfigProperties;
+        this.providerProperties = providerProperties;
     }
 
     @PostConstruct  // init-method
@@ -63,7 +63,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @SneakyThrows
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
-        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(providerConfigProperties.getMetas());
+        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(providerProperties.getMetas());
         rc.start();
         skeleton.keySet().forEach(this::registerService);
     }
