@@ -4,6 +4,7 @@ import com.stephenshen.ssrpc.core.api.RpcContext;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.api.RpcException;
+import com.stephenshen.ssrpc.core.governance.SlidingTimeWindow;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,9 @@ import org.springframework.util.MultiValueMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -26,6 +29,10 @@ public class ProviderInvoker {
 
     private final MultiValueMap<String, ProviderMeta> skeleton;
 
+    private int tpsLimit = 20;
+
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
+
     public ProviderInvoker(ProviderBootstrap providerBootstrap) {
         this.skeleton = providerBootstrap.getSkeleton();
     }
@@ -36,7 +43,20 @@ public class ProviderInvoker {
             request.getParams().forEach(RpcContext::setContextParameter);
         }
         RpcResponse<Object> rpcResponse = new RpcResponse();
-        List<ProviderMeta> providerMetas = skeleton.get(request.getService());
+        String service = request.getService();
+        synchronized (windows) {
+            SlidingTimeWindow window = windows.computeIfAbsent(service, k -> new SlidingTimeWindow());
+            if (window.calcSum() >= tpsLimit) {
+                System.out.println(window.toString());
+                throw new RpcException("service " + service + " invoked in 30s/[" +
+                        window.getSum() + "] larger than tpsLimit = " + tpsLimit, RpcException.ExceedLimitEx);
+            } else {
+                window.record(System.currentTimeMillis());
+                log.debug("service {} in window with {}", service, window.getSum());
+            }
+        }
+
+        List<ProviderMeta> providerMetas = skeleton.get(service);
         try {
             ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
             Method method = meta.getMethod();

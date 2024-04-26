@@ -1,5 +1,6 @@
 package com.stephenshen.ssrpc.demo.provider;
 
+import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.config.ProviderConfig;
@@ -94,5 +95,18 @@ public class SsrpcDemoProviderApplication {
         request4.setArgs(new Object[]{ userMap });
         RpcResponse<Object> rpcResponse4 = transport.invoke(request4);
         System.out.println("return : "+rpcResponse4.getData());
+
+        for (int i = 0; i < 1000; i++) {
+            try {
+                Thread.sleep(1000);
+                RpcResponse<Object> r = transport.invoke(request);
+                System.out.println(i + " ***>>> " +r.getData());
+            } catch (RpcException e) {
+                // ignore
+                System.out.println(i + " ***>>> " +e.getMessage() + " -> " + e.getErrCode());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

@@ -181,10 +181,10 @@
                             <tokenAuth>true</tokenAuth>
                             <autoPublish>true</autoPublish>
                             <excludeArtifacts>
-<!--                                <artifact>kkrpc-core</artifact>-->
-                                <excludeArtifact>kkrpc-demo-api</excludeArtifact>
-                                <excludeArtifact>kkrpc-demo-provider</excludeArtifact>
-                                <excludeArtifact>kkrpc-demo-consumer</excludeArtifact>
+<!--                                <artifact>ssrpc-core</artifact>-->
+                                <excludeArtifact>ssrpc-demo-api</excludeArtifact>
+                                <excludeArtifact>ssrpc-demo-provider</excludeArtifact>
+                                <excludeArtifact>ssrpc-demo-consumer</excludeArtifact>
                             </excludeArtifacts>
                         </configuration>
                     </plugin>
