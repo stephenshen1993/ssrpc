@@ -96,17 +96,18 @@ public class SsrpcDemoProviderApplication {
         RpcResponse<Object> rpcResponse4 = transport.invoke(request4);
         System.out.println("return : "+rpcResponse4.getData());
 
-        for (int i = 0; i < 1000; i++) {
-            try {
-                Thread.sleep(1000);
-                RpcResponse<Object> r = transport.invoke(request);
-                System.out.println(i + " ***>>> " +r.getData());
-            } catch (RpcException e) {
-                // ignore
-                System.out.println(i + " ***>>> " +e.getMessage() + " -> " + e.getErrCode());
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        // test for traffic control
+//        for (int i = 0; i < 60; i++) {
+//            try {
+//                Thread.sleep(1000);
+//                RpcResponse<Object> r = transport.invoke(request);
+//                System.out.println(i + " ***>>> " +r.getData());
+//            } catch (RpcException e) {
+//                // ignore
+//                System.out.println(i + " ***>>> " +e.getMessage() + " -> " + e.getErrcode());
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 }
