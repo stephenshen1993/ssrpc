@@ -13,7 +13,7 @@ import java.util.Map;
  * @author stephenshen
  * @date 2024/4/13 14:52:35
  */
-public class ParameterFilter implements Filter {
+public class ContextParameterFilter implements Filter {
     @Override
     public Object prefilter(RpcRequest request) {
         Map<String, String> params = RpcContext.ContextParameters.get();
@@ -25,7 +25,7 @@ public class ParameterFilter implements Filter {
 
     @Override
     public Object postfilter(RpcRequest request, RpcResponse response, Object result) {
-        // RpcContext.ContextParameters.get().clear();
+         RpcContext.ContextParameters.get().clear();
         return null;
     }
 }
