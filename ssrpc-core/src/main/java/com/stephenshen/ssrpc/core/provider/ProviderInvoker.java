@@ -30,6 +30,8 @@ public class ProviderInvoker {
     private final MultiValueMap<String, ProviderMeta> skeleton;
 
     private final int trafficControl;// = 20;
+    // todo 1201 : 改成map，针对不同的服务用不同的流控值
+    // todo 1202 : 对多个节点是共享一个数值，，，把这个map放到redis
 
     final Map<String, SlidingTimeWindow> windows = new HashMap<>();
     final Map<String, String> metas;
@@ -53,10 +55,10 @@ public class ProviderInvoker {
                 System.out.println(window);
                 throw new RpcException("service " + service + " invoked in 30s/[" +
                         window.getSum() + "] larger than tpsLimit = " + trafficControl, RpcException.ExceedLimitEx);
-            } else {
-                window.record(System.currentTimeMillis());
-                log.debug("service {} in window with {}", service, window.getSum());
             }
+
+            window.record(System.currentTimeMillis());
+            log.debug("service {} in window with {}", service, window.getSum());
         }
 
         List<ProviderMeta> providerMetas = skeleton.get(service);

@@ -111,8 +111,9 @@ public class SsrpcDemoProviderApplication {
         RpcResponse<Object> rpcResponse4 = transport.invoke(request4);
         System.out.println("return : "+rpcResponse4.getData());
 
-//        // test for traffic control
-//        for (int i = 0; i < 60; i++) {
+        // test 5 for traffic control
+        System.out.println("Provider Case 5. >>===[复杂测试：测试流量并发控制]===");
+//        for (int i = 0; i < 120; i++) {
 //            try {
 //                Thread.sleep(1000);
 //                RpcResponse<Object> r = transport.invoke(request);
