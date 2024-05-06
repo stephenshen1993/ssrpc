@@ -38,7 +38,8 @@ class SsrpcDemoConsumerApplicationTests {
                 "--logging.level.com.stephenshen.ssrpc=info",
                 "--ssrpc.provider.metas.dc=bj",
                 "--ssrpc.provider.metas.gray=false",
-                "--ssrpc.provider.metas.unit=B001"
+                "--ssrpc.provider.metas.unit=B001",
+                "--ssrpc.provider.metas.tc=300"
         );
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
@@ -52,7 +53,8 @@ class SsrpcDemoConsumerApplicationTests {
                 "--logging.level.com.stephenshen.ssrpc=info",
                 "--ssrpc.provider.metas.dc=bj",
                 "--ssrpc.provider.metas.gray=false",
-                "--ssrpc.provider.metas.unit=B002"
+                "--ssrpc.provider.metas.unit=B002",
+                "--ssrpc.provider.metas.tc=300"
         );
     }
     @Test
