@@ -12,10 +12,6 @@
     <name>ssrpc-demo-consumer</name>
     <description>ssrpc-demo-consumer</description>
 
-    <properties>
-        <skip_maven_deploy>true</skip_maven_deploy>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>

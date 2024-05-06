@@ -12,10 +12,6 @@
     <name>ssrpc-demo-api</name>
     <description>ssrpc-demo-api</description>
 
-    <properties>
-        <skip_maven_deploy>true</skip_maven_deploy>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
