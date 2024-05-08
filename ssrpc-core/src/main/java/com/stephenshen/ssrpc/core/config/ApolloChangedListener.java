@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
+ * Apollo config changed listener.
+ *
  * @author stephenshen
  * @date 2024/5/8 07:22:43
  */

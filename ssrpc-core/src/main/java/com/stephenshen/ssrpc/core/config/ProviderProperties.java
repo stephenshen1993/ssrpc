@@ -18,11 +18,7 @@ import java.util.Map;
  * @date 2024/4/13 17:29:43
  */
 @Data
-//@Configuration
 @ConfigurationProperties(prefix = "ssrpc.provider")
-//@EnableApolloConfig
-//@RefreshScope
-//@ImportAutoConfiguration(RefreshAutoConfiguration.class)
 public class ProviderProperties {
 
     // for provider
