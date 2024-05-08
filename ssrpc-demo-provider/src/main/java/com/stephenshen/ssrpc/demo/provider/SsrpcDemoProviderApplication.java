@@ -4,12 +4,10 @@ import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.config.ProviderConfig;
-import com.stephenshen.ssrpc.core.config.ProviderProperties;
 import com.stephenshen.ssrpc.core.transport.SpringBootTransport;
 import com.stephenshen.ssrpc.demo.api.User;
 import com.stephenshen.ssrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -41,16 +39,16 @@ public class SsrpcDemoProviderApplication {
         SpringApplication.run(SsrpcDemoProviderApplication.class, args);
     }
 
-    @Value("${ssrpc.provider.test}")
-    String test;
-
-    @Autowired
-    ProviderProperties providerProperties;
-
-    @RequestMapping("/test")
-    public String test() {
-        return test + "_" + providerProperties.getTest();
-    }
+//    @Value("${ssrpc.provider.test}")
+//    String test;
+//
+//    @Autowired
+//    ProviderProperties providerProperties;
+//
+//    @RequestMapping("/test")
+//    public String test() {
+//        return test + "_" + providerProperties.getTest();
+//    }
 
     @Autowired
     UserService userService;

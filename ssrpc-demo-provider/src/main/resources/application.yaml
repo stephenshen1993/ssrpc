@@ -10,7 +10,6 @@ ssrpc:
     namespace: public
     env: dev
   provider:
-    test: "test001"
     metas:
       dc: bj
       gray: false
