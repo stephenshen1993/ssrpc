@@ -1,11 +1,11 @@
 package com.stephenshen.ssrpc.demo.provider;
 
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
-import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
+import com.stephenshen.ssrpc.core.config.ApolloChangedListener;
 import com.stephenshen.ssrpc.core.config.ProviderConfig;
-import com.stephenshen.ssrpc.core.config.ProviderConfigProperties;
+import com.stephenshen.ssrpc.core.config.ProviderProperties;
 import com.stephenshen.ssrpc.core.transport.SpringBootTransport;
 import com.stephenshen.ssrpc.demo.api.User;
 import com.stephenshen.ssrpc.demo.api.UserService;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SpringBootApplication
 @RestController
-@Import({ProviderConfig.class})
+@SpringBootApplication
 @EnableApolloConfig
+@Import({ProviderConfig.class})
+//@ImportAutoConfiguration({ProviderConfig.class})
 public class SsrpcDemoProviderApplication {
+
+    @Bean
+    ApolloChangedListener apolloChangedListener() {
+        return new ApolloChangedListener();
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(SsrpcDemoProviderApplication.class, args);
@@ -39,11 +47,11 @@ public class SsrpcDemoProviderApplication {
     String test;
 
     @Autowired
-    ProviderConfigProperties providerConfigProperties;
+    ProviderProperties providerProperties;
 
     @RequestMapping("/test")
     public String test() {
-        return test + "_" + providerConfigProperties.getTest();
+        return test + "_" + providerProperties.getTest();
     }
 
     @Autowired
@@ -59,8 +67,12 @@ public class SsrpcDemoProviderApplication {
     }
 
     @Bean
-    ApplicationRunner providerRun() {
-        return x -> testAll();
+    ApplicationRunner providerRun(@Autowired ApplicationContext context) {
+        return x -> {
+            ConfigurationPropertiesRebinder rebinder = context.getBean(ConfigurationPropertiesRebinder.class);
+            System.out.println(rebinder);
+            // testAll();
+        };
     }
 
     @Autowired

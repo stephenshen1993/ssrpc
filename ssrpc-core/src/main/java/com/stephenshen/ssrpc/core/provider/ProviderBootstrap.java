@@ -2,8 +2,8 @@ package com.stephenshen.ssrpc.core.provider;
 
 import com.stephenshen.ssrpc.core.annotation.SSProvider;
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
-import com.stephenshen.ssrpc.core.config.AppConfigProperties;
-import com.stephenshen.ssrpc.core.config.ProviderConfigProperties;
+import com.stephenshen.ssrpc.core.config.AppProperties;
+import com.stephenshen.ssrpc.core.config.ProviderProperties;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.meta.ServiceMeta;
@@ -40,15 +40,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
     private RegistryCenter rc;
 
     private String port;
-    private AppConfigProperties appConfigProperties;
-    private ProviderConfigProperties providerProperties;
+    private AppProperties appProperties;
+    private ProviderProperties providerProperties;
 
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private InstanceMeta instance;
 
-    public ProviderBootstrap(String port, AppConfigProperties appConfigProperties, ProviderConfigProperties providerProperties) {
+    public ProviderBootstrap(String port, AppProperties appProperties, ProviderProperties providerProperties) {
         this.port = port;
-        this.appConfigProperties = appConfigProperties;
+        this.appProperties = appProperties;
         this.providerProperties = providerProperties;
     }
 
@@ -76,15 +76,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
     private void registerService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(appConfigProperties.getId()).namespace(appConfigProperties.getNamespace())
-                .env(appConfigProperties.getEnv()).name(service).build();
+                .app(appProperties.getId()).namespace(appProperties.getNamespace())
+                .env(appProperties.getEnv()).name(service).build();
         rc.register(serviceMeta, instance);
     }
 
     private void unregisterService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(appConfigProperties.getId()).namespace(appConfigProperties.getNamespace())
-                .env(appConfigProperties.getEnv()).name(service).build();
+                .app(appProperties.getId()).namespace(appProperties.getNamespace())
+                .env(appProperties.getEnv()).name(service).build();
         rc.unregister(serviceMeta, instance);
     }
 

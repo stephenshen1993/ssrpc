@@ -1,5 +1,6 @@
 package com.stephenshen.ssrpc.core.api;
 
+import com.stephenshen.ssrpc.core.config.ConsumerProperties;
 import com.stephenshen.ssrpc.core.meta.InstanceMeta;
 import lombok.Data;
 
@@ -22,6 +23,8 @@ public class RpcContext {
     LoadBalancer<InstanceMeta> loadBalancer;
 
     Map<String, String> parameters = new HashMap<>();
+
+    private ConsumerProperties consumerProperties;
 
     public String param(String key) {
         return parameters.get(key);
