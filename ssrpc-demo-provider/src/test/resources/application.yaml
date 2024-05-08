@@ -15,7 +15,22 @@ ssrpc:
       gray: false
       unit: B002
 
+app:
+  id: app1
+apollo:
+  cacheDir: /opt/data/
+  cluster: default
+  meta: http://localhost:8080
+  autoUpdateInjectedSpringProperties: true
+  bootstrap:
+    enabled: true
+    namespaces: app1
+    eagerLoad:
+      enabled: false
+
+
 logging:
   level:
-    root: error
+    root: info
     com.stephenshen.ssrpc: debug
+    com.ctrip: debug

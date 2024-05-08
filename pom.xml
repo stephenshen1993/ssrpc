@@ -5,8 +5,8 @@
     <groupId>io.github.stephenshen1993</groupId>
     <artifactId>ssrpc</artifactId>
     <version>${ssrpc.version}</version>
-    <name>ssrpc</name>
-    <description>ssrpc</description>
+    <name>ssrpc-parent</name>
+    <description>ssrpc-parent</description>
     <packaging>pom</packaging>
     <url>https://github.com/stephenshen1993/ssrpc</url>
 
@@ -38,13 +38,15 @@
     </developers>
 
     <properties>
-        <ssrpc.version>0.0.5</ssrpc.version>
-        <spring.boot.version>3.2.3</spring.boot.version>
+        <ssrpc.version>0.0.6-SNAPSHOT</ssrpc.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <spring.boot.version>3.2.3</spring.boot.version>
+        <apollo.version>2.2.0</apollo.version>
     </properties>
 
     <modules>

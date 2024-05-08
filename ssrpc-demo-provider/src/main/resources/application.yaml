@@ -24,12 +24,19 @@ logging:
 app:
   id: app1
 apollo:
-  cacheDir: /opt/data/                       #配置本地配置缓存目录
-  cluster: default                           #指定使用哪个集群的配置
-  meta: http://http://kimmking.cn:8080           #DEV环境配置中心地址
-  autoUpdateInjectedSpringProperties: true   #是否开启 Spring 参数自动更新
+  # 配置本地配置缓存目录
+  cacheDir: /opt/data/
+  # 指定使用哪个集群的配置
+  cluster: default
+  # 配置中心地址
+  meta: http://http://kimmking.cn:8080
+  # 是否开启 Spring 参数自动更新
+  autoUpdateInjectedSpringProperties: true
   bootstrap:
-    enabled: true                            #是否开启 Apollo
-    namespaces: app1                  #设置 Namespace
+    # 是否启用 Apollo
+    enabled: true
+    # 设置 Namespace
+    namespaces: app1
     eagerLoad:
-      enabled: false                         #将 Apollo 加载提到初始化日志系统之前
+      # 将 Apollo 加载提到初始化日志系统之前
+      enabled: false

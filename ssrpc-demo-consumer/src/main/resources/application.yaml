@@ -18,6 +18,19 @@ ssrpc:
     halfOpenInitialDelay: 10000
     halfOpenDelay: 60000
 
+app:
+  id: app1
+apollo:
+  cacheDir: /opt/data/
+  cluster: default
+  meta: http://localhost:8080
+  autoUpdateInjectedSpringProperties: true
+  bootstrap:
+    enabled: true
+    namespaces: app1
+    eagerLoad:
+      enabled: false
+
 logging:
   level:
     root: error
