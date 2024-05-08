@@ -36,6 +36,12 @@ public class ConsumerConfig {
     ConsumerProperties consumerProperties;
 
     @Bean
+    @ConditionalOnMissingBean
+    ApolloChangedListener consumer_apolloChangedListener() {
+        return new ApolloChangedListener();
+    }
+
+    @Bean
     public ConsumerBootstrap createConsumerBootstrap() {
         return new ConsumerBootstrap();
     }

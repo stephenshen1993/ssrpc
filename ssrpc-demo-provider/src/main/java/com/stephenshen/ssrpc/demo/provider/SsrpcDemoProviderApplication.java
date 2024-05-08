@@ -3,7 +3,6 @@ package com.stephenshen.ssrpc.demo.provider;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
-import com.stephenshen.ssrpc.core.config.ApolloChangedListener;
 import com.stephenshen.ssrpc.core.config.ProviderConfig;
 import com.stephenshen.ssrpc.core.config.ProviderProperties;
 import com.stephenshen.ssrpc.core.transport.SpringBootTransport;
@@ -31,13 +30,12 @@ import java.util.Map;
 @SpringBootApplication
 @EnableApolloConfig
 @Import({ProviderConfig.class})
-//@ImportAutoConfiguration({ProviderConfig.class})
 public class SsrpcDemoProviderApplication {
 
-    @Bean
-    ApolloChangedListener apolloChangedListener() {
-        return new ApolloChangedListener();
-    }
+//    @Bean
+//    ApolloChangedListener apolloChangedListener() {
+//        return new ApolloChangedListener();
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(SsrpcDemoProviderApplication.class, args);
