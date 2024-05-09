@@ -4,6 +4,7 @@ import com.stephenshen.ssrpc.core.api.RpcContext;
 import com.stephenshen.ssrpc.core.api.RpcException;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
+import com.stephenshen.ssrpc.core.config.ProviderProperties;
 import com.stephenshen.ssrpc.core.governance.SlidingTimeWindow;
 import com.stephenshen.ssrpc.core.meta.ProviderMeta;
 import com.stephenshen.ssrpc.core.util.TypeUtils;
@@ -29,17 +30,12 @@ public class ProviderInvoker {
 
     private final MultiValueMap<String, ProviderMeta> skeleton;
 
-    // private int trafficControl;// = 20;
-    // todo 1201 : 改成map，针对不同的服务用不同的流控值
-    // todo 1202 : 对多个节点是共享一个数值，，，把这个map放到redis
-
     final Map<String, SlidingTimeWindow> windows = new HashMap<>();
-    final Map<String, String> metas;
+    final ProviderProperties providerProperties;
 
     public ProviderInvoker(ProviderBootstrap providerBootstrap) {
         this.skeleton = providerBootstrap.getSkeleton();
-        this.metas = providerBootstrap.getProviderProperties().getMetas();
-        // this.trafficControl = Integer.parseInt(metas.getOrDefault("tc", "20"));
+        this.providerProperties = providerBootstrap.getProviderProperties();
     }
 
     public RpcResponse<Object> invoke(RpcRequest request) {
@@ -49,7 +45,7 @@ public class ProviderInvoker {
         }
         RpcResponse<Object> rpcResponse = new RpcResponse();
         String service = request.getService();
-        int trafficControl = Integer.parseInt(metas.getOrDefault("tc", "20"));
+        int trafficControl = Integer.parseInt(providerProperties.getMetas().getOrDefault("tc", "20"));
         log.debug(" ===>> trafficControl:{} for {}", trafficControl, service);
         synchronized (windows) {
             SlidingTimeWindow window = windows.computeIfAbsent(service, k -> new SlidingTimeWindow());
