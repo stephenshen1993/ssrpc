@@ -67,7 +67,7 @@ public class SsrpcDemoProviderApplication {
         return x -> {
             ConfigurationPropertiesRebinder rebinder = context.getBean(ConfigurationPropertiesRebinder.class);
             System.out.println(rebinder);
-            // testAll();
+             testAll();
         };
     }
 

@@ -32,5 +32,5 @@ apollo:
 logging:
   level:
     root: info
-    com.stephenshen.ssrpc: debug
-    com.ctrip: debug
+    com.stephenshen.ssrpc: info
+    com.ctrip: info
