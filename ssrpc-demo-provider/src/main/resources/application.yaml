@@ -16,6 +16,9 @@ ssrpc:
       unit: B001
       tc: 300
 
+ssregistry:
+  servers: http://localhost:8484
+
 logging:
   level:
     root: debug
