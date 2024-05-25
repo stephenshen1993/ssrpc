@@ -3,7 +3,7 @@ package com.stephenshen.ssrpc.core.config;
 import com.stephenshen.ssrpc.core.api.RegistryCenter;
 import com.stephenshen.ssrpc.core.provider.ProviderBootstrap;
 import com.stephenshen.ssrpc.core.provider.ProviderInvoker;
-import com.stephenshen.ssrpc.core.registry.zk.ZkRegistryCenter;
+import com.stephenshen.ssrpc.core.registry.ss.SsRegistryCenter;
 import com.stephenshen.ssrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +63,6 @@ public class ProviderConfig {
 
     @Bean //(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter provider_rc(){
-        return new ZkRegistryCenter();
+        return new SsRegistryCenter(); // new ZkRegistryCenter();
     }
 }

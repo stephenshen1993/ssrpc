@@ -47,7 +47,7 @@ class SsrpcDemoProviderApplicationTests {
 
     @Test
     void printProviderProperties() {
-        System.out.println(" ===> KkrpcDemoProviderApplicationTests  .... ");
+        System.out.println(" ===> SsrpcDemoProviderApplicationTests  .... ");
         System.out.println("....  providerProperties  .....");
         System.out.println(providerProperties);
         System.out.println("....  providerProperties  .....");

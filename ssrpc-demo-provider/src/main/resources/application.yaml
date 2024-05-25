@@ -21,7 +21,7 @@ ssregistry:
 
 logging:
   level:
-    root: debug
+    root: info
     com.stephenshen.ssrpc: debug
 
 app:
@@ -32,7 +32,7 @@ apollo:
   # 指定使用哪个集群的配置
   cluster: default
   # 配置中心地址
-  meta: http://http://kimmking.cn:8080
+  meta: http://kimmking.cn:8080
   # 是否开启 Spring 参数自动更新
   autoUpdateInjectedSpringProperties: true
   bootstrap:
