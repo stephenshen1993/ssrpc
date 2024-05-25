@@ -7,10 +7,10 @@ import com.stephenshen.ssrpc.core.consumer.HttpInvoker;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * OKHttp invoker.
  * @author stephenshen
  * @version 1.0
  * @date 2024/3/27 08:00
@@ -47,6 +47,37 @@ public class OkHttpInvoker implements HttpInvoker {
             return rpcResponse;
         } catch (Exception e) {
             // e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String post(String requestString, String url) {
+        log.debug(" ===> post  url = {}, requestString = {}", requestString, url);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(requestString, JSON_TYPE))
+                .build();
+        try {
+            String respJson = client.newCall(request).execute().body().string();
+            log.debug(" ===> respJson = " + respJson);
+            return respJson;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String get(String url) {
+        log.debug(" ===> get url = " + url);
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        try {
+            String respJson = client.newCall(request).execute().body().string();
+            log.debug(" ===> respJson = " + respJson);
+            return respJson;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
