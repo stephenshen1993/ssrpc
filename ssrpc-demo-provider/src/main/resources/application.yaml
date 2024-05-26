@@ -23,6 +23,7 @@ logging:
   level:
     root: info
     com.stephenshen.ssrpc: debug
+    com.stephenshen: debug
 
 app:
   id: app1

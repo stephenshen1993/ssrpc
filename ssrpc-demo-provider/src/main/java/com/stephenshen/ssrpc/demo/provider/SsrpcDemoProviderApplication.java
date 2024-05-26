@@ -1,6 +1,7 @@
 package com.stephenshen.ssrpc.demo.provider;
 
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import com.stephenshen.ssconfig.client.annotation.EnableSSConfig;
 import com.stephenshen.ssrpc.core.api.RpcRequest;
 import com.stephenshen.ssrpc.core.api.RpcResponse;
 import com.stephenshen.ssrpc.core.config.ProviderConfig;
@@ -26,7 +27,8 @@ import java.util.Map;
 
 @RestController
 @SpringBootApplication
-@EnableApolloConfig
+//@EnableApolloConfig
+@EnableSSConfig
 @Import({ProviderConfig.class})
 public class SsrpcDemoProviderApplication {
 
