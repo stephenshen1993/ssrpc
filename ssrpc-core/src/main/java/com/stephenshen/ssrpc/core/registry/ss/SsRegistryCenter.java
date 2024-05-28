@@ -29,50 +29,45 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SsRegistryCenter implements RegistryCenter {
 
+    private static final String REG_PATH = "/reg";
+    private static final String UNREG_PATH = "/unreg";
+    private static final String FIND_ALL_PATH = "/findAll";
+    private static final String VERSION_PATH = "/version";
+    private static final String RENEWS_PATH = "/renews";
+
     @Value("${ssregistry.servers}")
     private String servers;
     Map<String, Long> VERSIONS = new HashMap<>();
     MultiValueMap<InstanceMeta, ServiceMeta> RENEWS = new LinkedMultiValueMap<>();
-    ScheduledExecutorService consumerExecutor = null;
-    ScheduledExecutorService providerExecutor = null;
+    SsHealthChecker healthChecker = new SsHealthChecker();
+
 
     @Override
     public void start() {
       log.info(" ====>>> [SSRegistry] : start with server : {}", servers);
-        consumerExecutor = Executors.newScheduledThreadPool(1);
-        providerExecutor = Executors.newScheduledThreadPool(1);
-        providerExecutor.scheduleWithFixedDelay(() -> {
+      healthChecker.start();
+      providerCheck();
+    }
+
+    public void providerCheck() {
+        healthChecker.providerCheck(() -> {
             RENEWS.keySet().forEach(instance -> {
-                String services = RENEWS.get(instance).stream().map(ServiceMeta::toPath).collect(Collectors.joining(","));
-                Long timestamp = HttpInvoker.httpPost(JSON.toJSONString(instance), servers + "/renews?services=" + services, Long.class);
-                log.info(" ====>>> [SSRegistry] : renew instance {} for services {} at {}", instance, services, timestamp);
+                Long timestamp = HttpInvoker.httpPost(JSON.toJSONString(instance), renewPath(RENEWS.get(instance)), Long.class);
+                log.info(" ====>>> [SSRegistry] : renew instance {} at {}", instance, timestamp);
             });
-        }, 5, 5, TimeUnit.SECONDS);
+        });
     }
 
     @Override
     public void stop() {
         log.info(" ====>>> [SSRegistry] : stop with server : {}", servers);
-        gracefulShutdown(consumerExecutor);
-        gracefulShutdown(providerExecutor);
-    }
-
-    private void gracefulShutdown(ScheduledExecutorService executorService) {
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
-            if (executorService.isTerminated()) {
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            // ignore
-        }
+        healthChecker.stop();
     }
 
     @Override
     public void register(ServiceMeta service, InstanceMeta instance) {
         log.info(" ====>>> [SSRegistry] : register instance {} for {}", instance, service);
-        HttpInvoker.httpPost(JSON.toJSONString(instance), servers + "/reg?service=" + service.toPath(), InstanceMeta.class);
+        HttpInvoker.httpPost(JSON.toJSONString(instance), regPath(service), InstanceMeta.class);
         log.info(" ====>>> [SSRegistry] : registered {}", instance);
         RENEWS.add(instance, service);
     }
@@ -80,7 +75,7 @@ public class SsRegistryCenter implements RegistryCenter {
     @Override
     public void unregister(ServiceMeta service, InstanceMeta instance) {
         log.info(" ====>>> [SSRegistry] : unregister instance {} for {}", instance, service);
-        HttpInvoker.httpPost(JSON.toJSONString(instance), servers + "/unreg?service=" + service.toPath(), InstanceMeta.class);
+        HttpInvoker.httpPost(JSON.toJSONString(instance), unregPath(service), InstanceMeta.class);
         log.info(" ====>>> [SSRegistry] : unregistered {}", instance);
         RENEWS.remove(instance, service);
     }
@@ -88,22 +83,48 @@ public class SsRegistryCenter implements RegistryCenter {
     @Override
     public List<InstanceMeta> fetchAll(ServiceMeta service) {
         log.info(" ====>>> [SSRegistry] : find all instance for {}", service);
-        List<InstanceMeta> instances = HttpInvoker.httpGet(servers + "/findAll?service=" + service.toPath(), new TypeReference<>() {});
+        List<InstanceMeta> instances = HttpInvoker.httpGet(findAllPath(service), new TypeReference<>() {});
         log.info(" ====>>> [SSRegistry] : findAll = {}", instances);
         return instances;
     }
 
     @Override
     public void subscribe(ServiceMeta service, ChangedListener listener) {
-        consumerExecutor.scheduleWithFixedDelay( () -> {
+        healthChecker.consumerCheck( () -> {
             Long version = VERSIONS.getOrDefault(service.toPath(), -1L);
-            Long newVersion = HttpInvoker.httpGet(servers + "/version?service=" + service.toPath(), Long.class);
+            Long newVersion = HttpInvoker.httpGet(versionPath(service), Long.class);
             log.info(" ====>>> [SSRegistry] : version = {}, newVersion = {}", version, newVersion);
             if (newVersion > version) {
                 List<InstanceMeta> instances = fetchAll(service);
                 listener.fire(new Event(instances));
                 VERSIONS.put(service.toPath(), newVersion);
             }
-        }, 1000, 5000, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private String regPath(ServiceMeta service) {
+        return path(REG_PATH, service);
+    }
+    private String unregPath(ServiceMeta service) {
+        return path(UNREG_PATH, service);
+    }
+    private String findAllPath(ServiceMeta service) {
+        return path(FIND_ALL_PATH, service);
+    }
+    private String versionPath(ServiceMeta service) {
+        return path(VERSION_PATH, service);
+    }
+    private String path(String context, ServiceMeta service) {
+        return servers + context + "?service=" + service.toPath();
+    }
+
+    private String renewPath(List<ServiceMeta> services) {
+        return path(RENEWS_PATH, services);
+    }
+
+    private String path(String context, List<ServiceMeta> serviceList) {
+        String services = serviceList.stream().map(ServiceMeta::toPath).collect(Collectors.joining(","));
+        log.info(" ====>>> [SSRegistry] : renew instance for {}", services);
+        return servers + context + "?services=" + services;
     }
 }
